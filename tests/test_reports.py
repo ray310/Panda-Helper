@@ -140,7 +140,7 @@ def test_DataFrameReport():
     compare_file = os.path.join(TEST_DATA_DIR, comparison_report)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
-        reports.DataFrameReport(TEST_DF).save_report(test_file)
+        reports.DataFrameReport(TEST_DF, name="test_name").save_report(test_file)
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 

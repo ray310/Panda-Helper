@@ -5,7 +5,7 @@ import scipy.stats
 from tabulate import tabulate
 
 
-def abbreviate_df(df, first=20, last=5) -> object:
+def abbreviate_df(df, first=20, last=5):
     """Returns a shortened series or dataframe containing the first x values
     and last y values. Most useful when input is sorted."""
     if first < 0 or last < 0:
