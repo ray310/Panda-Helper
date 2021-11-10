@@ -1,0 +1,33 @@
+NUMBER OF PERSONS INJURED Info
+--------------------------------  -----
+Data Type                         int64
+Count                             200
+Unique Values                     5
+Null Values                       0
+
+  Value    Count  % of total
+-------  -------  ------------
+      0      160  80.00%
+      1       29  14.50%
+      2        7  3.50%
+      3        3  1.50%
+      8        1  0.50%
+
+Statistic                       Value
+-------------------------  ----------
+count                      200
+min                          0
+1%                           0
+5%                           0
+25%                          0
+50%                          0
+75%                          0
+95%                          2
+99%                          3
+max                          8
+median                       0
+mean                         0.3
+median absolute deviation    0
+standard deviation           0.808249
+skew                         5.3412
+
