@@ -5,31 +5,30 @@ import scipy.stats
 from tabulate import tabulate
 
 
-def abbreviate_df(df, most_common=20, least_common=5):
-    """Returns a shortened series or dataframe"""
+def abbreviate_df(df, first=20, last=5) -> object:
+    """Returns a shortened series or dataframe containing the first x values
+    and last y values. Most useful when input is sorted."""
+    if first < 0 or last < 0:
+        raise ValueError("'first' and 'last' parameters cannot be negative")
     if not (isinstance(df, pd.DataFrame) or isinstance(df, pd.Series)):
         raise TypeError(f"{df} is not pd.Series or pd.DataFrame")
-
-    if len(df) <= most_common + least_common:
+    if len(df) <= first + last:
         return df
     else:
-        return pd.concat(
-            [df.iloc[:most_common], df.iloc[(len(df) - least_common) : len(df)]]
-        )
+        return pd.concat([df.iloc[:first], df.iloc[(len(df) - last): len(df)]])
 
 
 def abbreviate_string(s, limit=60):
-    if isinstance(s, str):
-        return s[:limit]
-    else:
-        return s
+    if not isinstance(s, str):
+        raise TypeError("Input is not a string")
+    return s[:limit]
 
 
 def distribution_stats(series):
     """Takes a numeric pd.Series and returns a dictionary of distribution statistics"""
     try:
         mad = scipy.stats.median_abs_deviation(series, nan_policy="omit")
-    except (AttributeError):
+    except AttributeError:
         # included for backwards compatibility
         # median_absolute_deviation has been deprecated
         mad = scipy.stats.median_absolute_deviation(series, nan_policy="omit")
@@ -47,7 +46,7 @@ def distribution_stats(series):
         "max": series.max(),
         "median": series.median(),
         "mean": series.mean(),
-        "median absolute deviation ": mad,
+        "median absolute deviation": mad,
         "standard deviation": series.std(),
         "skew": series.skew(),
     }
@@ -62,7 +61,7 @@ def frequency_table(series):
     percent = pd.Series(["{0:.2f}%".format(x) for x in percent], index=percent.index)
     percent.name = "% of Total"
     output = pd.concat([freq, percent], axis=1)
-    output.index = [abbreviate_string(x, limit=60) for x in output.index]
+    output.index = [abbreviate_string(str(x), limit=60) for x in output.index]
     return output
 
 
@@ -126,7 +125,7 @@ class SeriesReport:
             ("Null Values", self.num_nulls),
         ]
         series_table = tabulate(series_info, headers=[f"{self.name} Info", ""])
-        freq_info = abbreviate_df(self.frequency, most_common=20, least_common=5)
+        freq_info = abbreviate_df(self.frequency, first=20, last=5)
         freq_table = tabulate(freq_info, headers=["Value", "Count", "% of total"])
         stats_table = ""
         if self.stats is not None:
