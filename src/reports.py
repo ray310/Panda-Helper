@@ -1,4 +1,5 @@
-""" Pretty-printed report classes and their associated helper functions"""
+""" Classes and associated helper functions to produce simple, pretty-printed
+data-profiling reports for Pandas' Series and DataFrames"""
 
 import pandas as pd
 import scipy.stats
