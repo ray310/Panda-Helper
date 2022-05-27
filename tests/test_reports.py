@@ -1,12 +1,12 @@
 """ Tests for helper functions in reports.py"""
-import pytest
 import os
 import math
 import numbers
-import numpy as np
-import pandas as pd
 import tempfile
 import filecmp
+import numpy as np
+import pandas as pd
+import pytest
 from src import reports
 
 TEST_DATA_DIR = "tests/test_data"
@@ -33,7 +33,7 @@ def test_abbreviate_df_invalid_input():
 def test_abbreviate_df_valid_output():
     """Valid input should lead to valid and consistent output"""
     output = reports.abbreviate_df(TEST_DF, 5, 5)
-    assert isinstance(output, pd.DataFrame) or isinstance(output, pd.Series)
+    assert isinstance(output, (pd.DataFrame, pd.Series))
     assert output.iloc[1]["LOCATION"] == "(40.7504, -73.985214)"
     assert output.iloc[8]["COLLISION_ID"] == 3676178
 
@@ -100,10 +100,10 @@ def test_distribution_stats_valid():
         "standard deviation": 0.8082489292651694,
         "skew": 5.341196456568395,
     }
-    for stat in stats:
-        assert stat in output.keys()
-        assert isinstance(output[stat], numbers.Number)
-        assert math.isclose(output[stat], stats[stat])
+    for key, val in stats.items():
+        assert key in output
+        assert isinstance(output[key], numbers.Number)
+        assert math.isclose(output[key], val)
 
 
 def test_frequency_table():
@@ -135,5 +135,7 @@ def test_SeriesReport():
     compare_file = os.path.join(TEST_DATA_DIR, comparison_report)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
-        reports.SeriesReport(TEST_DF["NUMBER OF PERSONS INJURED"]).save_report(test_file)
+        reports.SeriesReport(TEST_DF["NUMBER OF PERSONS INJURED"]).save_report(
+            test_file
+        )
         assert filecmp.cmp(compare_file, test_file, shallow=False)
