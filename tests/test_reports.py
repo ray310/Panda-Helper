@@ -5,7 +5,6 @@ import math
 import numbers
 import numpy as np
 import pandas as pd
-import scipy.stats
 import tempfile
 import filecmp
 from src import reports

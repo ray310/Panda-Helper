@@ -11,15 +11,17 @@ def abbreviate_df(df, first=20, last=5):
     and last y values. Most useful when input is sorted."""
     if first < 0 or last < 0:
         raise ValueError("'first' and 'last' parameters cannot be negative")
-    if not (isinstance(df, pd.DataFrame) or isinstance(df, pd.Series)):
+    if not isinstance(df, (pd.DataFrame, pd.Series)):
         raise TypeError(f"{df} is not pd.Series or pd.DataFrame")
     if len(df) <= first + last:
-        return df
+        abbrev = df
     else:
-        return pd.concat([df.iloc[:first], df.iloc[(len(df) - last): len(df)]])
+        abbrev = pd.concat([df.iloc[:first], df.iloc[(len(df) - last) : len(df)]])
+    return abbrev
 
 
 def abbreviate_string(s, limit=60):
+    """Returns the first x characters of a string where x is the input limit"""
     if not isinstance(s, str):
         raise TypeError("Input is not a string")
     return s[:limit]
@@ -52,8 +54,8 @@ def frequency_table(series):
     """Takes a pd.Series and returns a frequency table (pd.DataFrame)"""
     freq = series.value_counts()
     freq.name = "Count"
-    percent = series.value_counts(normalize=True) * 100
-    percent = pd.Series(["{0:.2f}%".format(x) for x in percent], index=percent.index)
+    counts = series.value_counts(normalize=True)
+    percent = pd.Series([f"{x:.2%}" for x in counts], index=counts.index)
     percent.name = "% of Total"
     output = pd.concat([freq, percent], axis=1)
     output.index = [abbreviate_string(str(x), limit=60) for x in output.index]
@@ -68,12 +70,10 @@ class DataFrameReport:
     def __init__(self, df, name=""):
         self.name = name
         self.shape = df.shape
-        self.dtypes = [x for x in zip(df.dtypes.index, df.dtypes.values)]
+        self.dtypes = list(zip(df.dtypes.index, df.dtypes.values))
         self.num_duplicates = sum(df.duplicated(keep="first"))
         self.nulls_per_row = df.isna().sum(axis=1)
-        self.null_stats = [
-            (k, v) for k, v in distribution_stats(self.nulls_per_row).items()
-        ]
+        self.null_stats = list(distribution_stats(self.nulls_per_row).items())
 
     def __repr__(self):
         df_info = [
@@ -84,14 +84,13 @@ class DataFrameReport:
             df_info.insert(0, ("DF Name", self.name))
         df_table = tabulate(df_info, headers=["DataFrame-Level Info", ""])
         dtype_table = tabulate(self.dtypes, headers=["Column Name", "Data Type"])
-        null_table = tabulate(
-            self.null_stats, headers=["Summary of Nulls Per Row", ""]
-        )
+        null_table = tabulate(self.null_stats, headers=["Summary of Nulls Per Row", ""])
         output = ["".join([x, "\n\n"]) for x in [df_table, dtype_table, null_table]]
         return "".join(output)
 
     def save_report(self, path):
-        with open(path, "w+") as fh:
+        """Saves report to provided path"""
+        with open(path, "w+", encoding="utf-8") as fh:
             fh.write(str(self))
 
 
@@ -110,7 +109,7 @@ class SeriesReport:
         self.frequency = frequency_table(series)
         self.stats = None
         if pd.api.types.is_numeric_dtype(self.dtype):
-            self.stats = [(k, v) for k, v in distribution_stats(series).items()]
+            self.stats = list(distribution_stats(series).items())
 
     def __repr__(self):
         series_info = [
@@ -130,5 +129,6 @@ class SeriesReport:
         return "".join(output)
 
     def save_report(self, path):
-        with open(path, "w+") as fh:
+        """Saves report to provided path"""
+        with open(path, "w+", encoding="utf-8") as fh:
             fh.write(str(self))
