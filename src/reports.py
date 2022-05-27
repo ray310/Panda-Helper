@@ -27,13 +27,7 @@ def abbreviate_string(s, limit=60):
 
 def distribution_stats(series):
     """Takes a numeric pd.Series and returns a dictionary of distribution statistics"""
-    try:
-        mad = scipy.stats.median_abs_deviation(series, nan_policy="omit")
-    except AttributeError:
-        # included for backwards compatibility
-        # median_absolute_deviation has been deprecated
-        mad = scipy.stats.median_absolute_deviation(series, nan_policy="omit")
-
+    mad = scipy.stats.median_abs_deviation(series, nan_policy="omit")
     stats = {
         "count": series.count(),
         "min": series.min(),

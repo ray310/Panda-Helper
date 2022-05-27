@@ -1,6 +1,6 @@
 dependencies:
     - pandas
-    - scipy
+    - scipy>=1.5
     - pip:
         - tabulate
 

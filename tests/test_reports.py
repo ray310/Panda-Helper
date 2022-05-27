@@ -107,20 +107,6 @@ def test_distribution_stats_valid():
         assert math.isclose(output[stat], stats[stat])
 
 
-def test_distribution_stats_deprecated_scipy(monkeypatch):
-    """MAD is still calculated when using older version of Scipy"""
-
-    def mock_abs(series, nan_policy):
-        raise AttributeError
-
-    monkeypatch.setattr(scipy.stats, "median_abs_deviation", mock_abs)
-
-    mad = reports.distribution_stats(TEST_DF["NUMBER OF PERSONS INJURED"])[
-        "median absolute deviation"
-    ]
-    assert math.isclose(mad, 0.0)
-
-
 def test_frequency_table():
     """Frequency gives expected output"""
     d_index = ["0", "1", "2", "3", "8"]
