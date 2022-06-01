@@ -1,4 +1,4 @@
-""" Tests for helper functions in reports.py"""
+""" Tests for helper functions and profile classes in reports.py"""
 import os
 import math
 import numbers
@@ -7,7 +7,7 @@ import filecmp
 import numpy as np
 import pandas as pd
 import pytest
-from src import reports
+from src.pandahelper import reports
 
 TEST_DATA_DIR = "tests/test_data"
 TEST_DATA_FILE = "sample_collisions.csv"
@@ -121,21 +121,21 @@ def test_frequency_table():
 
 def test_DataFrameReport():
     """Generated DataFrame report should match test report"""
-    comparison_report = "test_df_report.txt"
+    comparison_report = "test_df_profile.txt"
     compare_file = os.path.join(TEST_DATA_DIR, comparison_report)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
-        reports.DataFrameReport(TEST_DF, name="test_name").save_report(test_file)
+        reports.DataFrameProfile(TEST_DF, name="test_name").save_report(test_file)
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
 def test_SeriesReport():
     """Generated Series report should match test report"""
-    comparison_report = "test_series_injured_report.txt"
+    comparison_report = "test_series_injured_profile.txt"
     compare_file = os.path.join(TEST_DATA_DIR, comparison_report)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
-        reports.SeriesReport(TEST_DF["NUMBER OF PERSONS INJURED"]).save_report(
+        reports.SeriesProfile(TEST_DF["NUMBER OF PERSONS INJURED"]).save_report(
             test_file
         )
         assert filecmp.cmp(compare_file, test_file, shallow=False)
