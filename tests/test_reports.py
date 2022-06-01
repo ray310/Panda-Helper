@@ -121,7 +121,7 @@ def test_frequency_table():
 
 def test_DataFrameReport():
     """Generated DataFrame report should match test report"""
-    comparison_report = "test_df_report.txt"
+    comparison_report = "test_df_profile.txt"
     compare_file = os.path.join(TEST_DATA_DIR, comparison_report)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
@@ -131,7 +131,7 @@ def test_DataFrameReport():
 
 def test_SeriesReport():
     """Generated Series report should match test report"""
-    comparison_report = "test_series_injured_report.txt"
+    comparison_report = "test_series_injured_profile.txt"
     compare_file = os.path.join(TEST_DATA_DIR, comparison_report)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
