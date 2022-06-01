@@ -125,7 +125,7 @@ def test_DataFrameReport():
     compare_file = os.path.join(TEST_DATA_DIR, comparison_report)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
-        reports.DataFrameReport(TEST_DF, name="test_name").save_report(test_file)
+        reports.DataFrameProfile(TEST_DF, name="test_name").save_report(test_file)
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
@@ -135,7 +135,7 @@ def test_SeriesReport():
     compare_file = os.path.join(TEST_DATA_DIR, comparison_report)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
-        reports.SeriesReport(TEST_DF["NUMBER OF PERSONS INJURED"]).save_report(
+        reports.SeriesProfile(TEST_DF["NUMBER OF PERSONS INJURED"]).save_report(
             test_file
         )
         assert filecmp.cmp(compare_file, test_file, shallow=False)

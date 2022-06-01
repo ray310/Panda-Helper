@@ -62,7 +62,7 @@ def frequency_table(series):
     return output
 
 
-class DataFrameReport:
+class DataFrameProfile:
     """Report object created from a pd.DataFrame-like object to pretty-print a simple
     DataFrame-level report. Report can also be saved to a location using the
     save_report method"""
@@ -94,12 +94,11 @@ class DataFrameReport:
             fh.write(str(self))
 
 
-class SeriesReport:
+class SeriesProfile:
     """Report object created from a pd.Series-like object to pretty-print a simple
     Series-level report. Report can also be saved to a location using the
     save_report method"""
 
-    # attributes
     def __init__(self, series):
         self.name = series.name
         self.dtype = series.dtype
