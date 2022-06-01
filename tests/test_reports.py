@@ -1,4 +1,4 @@
-""" Tests for helper functions in reports.py"""
+""" Tests for helper functions and profile classes in reports.py"""
 import os
 import math
 import numbers
