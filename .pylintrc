@@ -1,0 +1,40 @@
+﻿# Pylint configuration settings
+
+[MASTER]
+fail-under=9.0
+jobs=0
+
+[MESSAGES CONTROL]
+disable=raw-checker-failed,
+        bad-inline-option,
+        locally-disabled,
+        file-ignored,
+        suppressed-message,
+        useless-suppression,
+        deprecated-pragma,
+        use-symbolic-message-instead
+
+
+[REPORTS]
+output-format=colorized
+
+[BASIC]
+good-names=i,
+           j,
+           k,
+           s,
+           x,
+           y,
+           z,
+           df,
+           fh,
+           _
+
+[FORMAT]
+max-line-length=88
+
+[STRING]
+check-quote-consistency=yes
+
+[DESIGN]
+max-args=5

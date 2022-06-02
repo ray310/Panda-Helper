@@ -1,0 +1,22 @@
+name: panda_helper
+channels:
+    - defaults
+    - conda-forge
+dependencies:
+    - python=3.9
+    - black
+    - build
+    - coverage
+    - jupyter
+    - pandas
+    - pip
+    - pylint
+    - pytest
+    - notebook
+    - scipy
+    - twine
+    - pip:
+        - pydoctest
+        - tabulate
+
+
