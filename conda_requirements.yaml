@@ -1,8 +1,0 @@
-dependencies:
-    - python>=3.6
-    - pandas
-    - scipy>=1.5
-    - pip:
-        - tabulate
-
-
