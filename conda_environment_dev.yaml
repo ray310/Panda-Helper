@@ -18,5 +18,3 @@ dependencies:
     - pip:
         - pydoctest
         - tabulate
-
-
