@@ -1,10 +1,10 @@
 DataFrame-Level Info
--------------------------  ---------
-DF Name                    test_name
-DF Shape                   (200, 29)
-Obviously Duplicated Rows  0
+----------------------  ---------
+DF Name                 test_name
+DF Shape                (200, 29)
+Duplicated Rows         0
 
-Column Name                    Data Type
+Series Name                    Data Type
 -----------------------------  -----------
 CRASH DATE                     object
 CRASH TIME                     object

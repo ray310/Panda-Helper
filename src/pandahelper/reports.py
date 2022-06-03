@@ -78,12 +78,12 @@ class DataFrameProfile:
     def __repr__(self):
         df_info = [
             ("DF Shape", self.shape),
-            ("Obviously Duplicated Rows", self.num_duplicates),
+            ("Duplicated Rows", self.num_duplicates),
         ]
         if self.name:
             df_info.insert(0, ("DF Name", self.name))
         df_table = tabulate(df_info, headers=["DataFrame-Level Info", ""])
-        dtype_table = tabulate(self.dtypes, headers=["Column Name", "Data Type"])
+        dtype_table = tabulate(self.dtypes, headers=["Series Name", "Data Type"])
         null_table = tabulate(self.null_stats, headers=["Summary of Nulls Per Row", ""])
         output = ["".join([x, "\n\n"]) for x in [df_table, dtype_table, null_table]]
         return "".join(output)
