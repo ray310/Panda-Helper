@@ -1,7 +1,9 @@
-## Panda-Helper: Quickly and easily inspect data
-__Panda-Helper creates data profiles for data in Pandas DataFrames and Series__
-- __Effortlessly perform initial data exploration,__ ___so you can move on to more in-depth analysis___
-- __Assess data quality and usefulness with minimal effort__
+# Panda-Helper: Quickly and easily inspect data
+Panda-Helper creates data profiles for data in Pandas DataFrames and Series
+
+Assess data quality and usefulness with minimal effort
+
+Effortlessly perform initial data exploration, _so you can move on to more in-depth analysis_
 
 -----
 ### DataFrame profiles quickly and easily:
@@ -10,7 +12,8 @@ __Panda-Helper creates data profiles for data in Pandas DataFrames and Series__
 - Display series names and data types
 - Provide distribution statistics on null values per row providing a view on data completeness
 
-#### Sample profile of DataFrame containing traffic data
+__Sample DataFrame profile__<br>
+_Vehicles passing through toll stations_
 
     DataFrame-Level Info
     -------------------------  ------------
@@ -69,7 +72,7 @@ _Direction vehicles are traveling_
     O         772180  48.68%
 
 __Sample profile of numeric data__<br>
-_Hourly vehicle counts at tolling point_
+_Hourly vehicle counts at tolling points_
 
     # Vehicles - ETC (E-ZPass) Info
     ---------------------------------  -------
