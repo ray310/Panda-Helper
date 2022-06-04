@@ -48,7 +48,7 @@ _Vehicles passing through toll stations_
     skew                        0
 
 -----
-### Series profiles:
+### Series profiles report the:
 - Series data type 
 - Count of non-null values in the series
 - Number of unique values
