@@ -4,6 +4,6 @@
 ### Added
 - Improved documentation
 ____
-## 0.0.1 - 2022-06-03
+## 0.0.1 - 2022-06-05
 ### Added
 - First version of Panda-Helper
