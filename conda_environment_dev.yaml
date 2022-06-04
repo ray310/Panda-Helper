@@ -10,11 +10,11 @@ dependencies:
     - jupyter
     - pandas
     - pip
+    - pydocstyle
     - pylint
     - pytest
     - notebook
     - scipy
     - twine
     - pip:
-        - pydoctest
         - tabulate
