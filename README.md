@@ -1,16 +1,16 @@
 # Panda-Helper: Quickly and easily inspect data
-Panda-Helper creates data profiles for data in Pandas DataFrames and Series
+Panda-Helper creates data profiles for Pandas DataFrames and Series
 
 Assess data quality and usefulness with minimal effort
 
-Effortlessly perform initial data exploration, _so you can move on to more in-depth analysis_
+Quickly perform initial data exploration, _so you can move on to more in-depth analysis_
 
 -----
-### DataFrame profiles quickly and easily:
+### DataFrame profiles:
 - Report shape
 - Detect duplicated rows
 - Display series names and data types
-- Provide distribution statistics on null values per row providing a view on data completeness
+- Calculate distribution statistics on null values per row providing a view on data completeness
 
 __Sample DataFrame profile__<br>
 _Vehicles passing through toll stations_
@@ -48,7 +48,7 @@ _Vehicles passing through toll stations_
     skew                        0
 
 -----
-### Series profiles quickly and easily report the:
+### Series profiles report the:
 - Series data type 
 - Count of non-null values in the series
 - Number of unique values
