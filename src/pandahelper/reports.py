@@ -1,5 +1,4 @@
-""" Classes and associated helper functions to produce simple, pretty-printed
-data-profiling reports for Pandas' Series and DataFrames"""
+"""Panda-Helper Classes and associated helper functions."""
 
 import pandas as pd
 import scipy.stats
@@ -7,8 +6,25 @@ from tabulate import tabulate
 
 
 def abbreviate_df(df, first=20, last=5):
-    """Returns a shortened series or dataframe containing the first x values
-    and last y values. Most useful when input is sorted."""
+    """Returns a shortened DataFrame or Series.
+
+    Returned dataframe will contain the input numbers of the first and last
+    rows. Most useful when input is sorted.
+
+    Args:
+        df (pd.DataFrame or pd.Series): pd.DataFrame or pd.Series
+        first (int): First n rows of input to be included in the shortened
+            Dataframe or Series. Default value is 20.
+        first (int): Last n rows of input to be included in the shortened
+            Dataframe or Series. Default value is 5.
+
+    Returns:
+        pd.DataFrame or pd.Series: Shortened DataFrame or Series.
+
+    Raises:
+        ValueError: If first or last are negative.
+        TypeError: If df is not a pd.DataFrame or pd.Series.
+    """
     if first < 0 or last < 0:
         raise ValueError("'first' and 'last' parameters cannot be negative")
     if not isinstance(df, (pd.DataFrame, pd.Series)):
@@ -21,14 +37,32 @@ def abbreviate_df(df, first=20, last=5):
 
 
 def abbreviate_string(s, limit=60):
-    """Returns the first x characters of a string where x is the input limit"""
+    """Returns first x characters of a string.
+
+    Args:
+        s (str): String to be shortened
+        limit (int): Maximum length of string. Default value is 60.
+
+    Returns:
+        str: Shortened string.
+
+    Raises:
+        TypeError: If input is not a string.
+    """
     if not isinstance(s, str):
         raise TypeError("Input is not a string")
     return s[:limit]
 
 
 def distribution_stats(series):
-    """Takes a numeric pd.Series and returns a dictionary of distribution statistics"""
+    """Returns Series distribution statistics.
+
+    Args:
+        series (pd.Series): Series used to calculate distribution statistics.
+
+    Returns:
+        dict: Key-value pairs with name of statistic and calculated value.
+    """
     mad = scipy.stats.median_abs_deviation(series, nan_policy="omit")
     stats = {
         "count": series.count(),
@@ -51,8 +85,17 @@ def distribution_stats(series):
 
 
 def frequency_table(series):
-    """Takes a pd.Series and returns a frequency table (pd.DataFrame)"""
-    freq = series.value_counts()
+    """Returns value counts and relative frequency.
+
+    Args:
+        series (pd.Series): Series used to calculate value counts and relative
+            frequencies.
+
+    Returns:
+        pd.DataFrame: DataFrame containing values as the row index with value
+            counts and counts as a percentage of total count.
+    """
+    freq = series.value_counts()  # excludes nulls
     freq.name = "Count"
     counts = series.value_counts(normalize=True)
     percent = pd.Series([f"{x:.2%}" for x in counts], index=counts.index)
@@ -63,11 +106,27 @@ def frequency_table(series):
 
 
 class DataFrameProfile:
-    """Report object created from a pd.DataFrame-like object to pretty-print a simple
-    DataFrame-level report. Report can also be saved to a location using the
-    save_report method"""
+    """DataFrame-level data profile.
+
+    Prepares pretty-printed DataFrame-level data profile that can be displayed
+    or saved.
+
+    Attributes:
+        name (str): Name of DataFrame profile if provided. Default value is "".
+        shape (tuple): Dataframe shape.
+        dtypes (pd.Series): Data types of Series within DataFrame.
+        num_duplicates (int): Number of duplicated rows.
+        nulls_per_row (pd.Series): Count of null values per row.
+        nulls_stats (list): Distribution statistics on nulls per row.
+    """
 
     def __init__(self, df, name=""):
+        """Initializes DataFrameProfile.
+
+        Args:
+            df (pd.DataFrame): DataFrame to profile.
+            name (str, optional): Name to assign to profile.
+        """
         self.name = name
         self.shape = df.shape
         self.dtypes = list(zip(df.dtypes.index, df.dtypes.values))
@@ -76,30 +135,52 @@ class DataFrameProfile:
         self.null_stats = list(distribution_stats(self.nulls_per_row).items())
 
     def __repr__(self):
+        """Printable version of profile."""
         df_info = [
             ("DF Shape", self.shape),
-            ("Obviously Duplicated Rows", self.num_duplicates),
+            ("Duplicated Rows", self.num_duplicates),
         ]
         if self.name:
             df_info.insert(0, ("DF Name", self.name))
         df_table = tabulate(df_info, headers=["DataFrame-Level Info", ""])
-        dtype_table = tabulate(self.dtypes, headers=["Column Name", "Data Type"])
+        dtype_table = tabulate(self.dtypes, headers=["Series Name", "Data Type"])
         null_table = tabulate(self.null_stats, headers=["Summary of Nulls Per Row", ""])
         output = ["".join([x, "\n\n"]) for x in [df_table, dtype_table, null_table]]
         return "".join(output)
 
     def save_report(self, path):
-        """Saves report to provided path"""
+        """Saves profile to provided path.
+
+        Args:
+            path (str): Where to save profile.
+        """
         with open(path, "w+", encoding="utf-8") as fh:
             fh.write(str(self))
 
 
 class SeriesProfile:
-    """Report object created from a pd.Series-like object to pretty-print a simple
-    Series-level report. Report can also be saved to a location using the
-    save_report method"""
+    """Series-level data profile.
+
+    Prepares pretty-printed Series-level data profile that can be displayed
+    or saved.
+
+    Attributes:
+        name (str): Name of Series.
+        dtype (np.dtype): Data types of Series within DataFrame.
+        count (int): Count of non-null values.
+        num_unique (int): Number of unique values.
+        num_nulls (int): Number of null values.
+        frequency (pd.DataFrame): Table of value counts and relative frequency
+            as a DataFrame
+        stats (list): Distribution statistics for numeric Series.
+    """
 
     def __init__(self, series):
+        """Initializes SeriesProfile.
+
+        Args:
+            series (pd.Series): DataFrame to profile.
+        """
         self.name = series.name
         self.dtype = series.dtype
         self.count = series.count()  # counts non-null values
@@ -111,6 +192,7 @@ class SeriesProfile:
             self.stats = list(distribution_stats(series).items())
 
     def __repr__(self):
+        """Printable version of profile."""
         series_info = [
             ("Data Type", self.dtype),
             ("Count", self.count),
@@ -128,6 +210,10 @@ class SeriesProfile:
         return "".join(output)
 
     def save_report(self, path):
-        """Saves report to provided path"""
+        """Saves profile to provided path.
+
+        Args:
+            path (str): Where to save profile.
+        """
         with open(path, "w+", encoding="utf-8") as fh:
             fh.write(str(self))
