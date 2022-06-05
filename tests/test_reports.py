@@ -106,6 +106,24 @@ def test_distribution_stats_valid():
         assert math.isclose(output[key], val)
 
 
+def test_distribution_stats_invalid():
+    """Invalid data type raises Type error"""
+    invalid_types = [
+        TEST_DF,
+        TEST_DF["BOROUGH"],  # pd.Series
+        "data",
+        34,
+        34.5,
+        {"data": "dictionary"},
+        [["col_name", 1], ["col_name2", 2]],
+        (("col_name", 3), ("col_name2", 4)),
+        np.array([1, 2, 3]),
+    ]
+    for invalid in invalid_types:
+        with pytest.raises(TypeError):
+            reports.distribution_stats(invalid)
+
+
 def test_frequency_table():
     """Frequency gives expected output"""
     d_index = ["0", "1", "2", "3", "8"]

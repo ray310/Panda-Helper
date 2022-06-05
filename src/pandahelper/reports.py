@@ -62,7 +62,14 @@ def distribution_stats(series):
 
     Returns:
         dict: Key-value pairs with name of statistic and calculated value.
+
+    Raises:
+        TypeError: If input is not a numeric pd.Series.
     """
+    if not isinstance(series, pd.Series):
+        raise TypeError(f"{series}, is not pd.Series")
+    if not pd.api.types.is_numeric_dtype(series.dtype):
+        raise TypeError(f"{series}, is not numeric")
     mad = scipy.stats.median_abs_deviation(series, nan_policy="omit")
     stats = {
         "count": series.count(),
