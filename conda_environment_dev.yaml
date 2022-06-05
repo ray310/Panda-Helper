@@ -15,6 +15,7 @@ dependencies:
     - pytest
     - notebook
     - scipy
+    - sphinx
     - twine
     - pip:
         - tabulate
