@@ -124,7 +124,7 @@ def test_distribution_stats_invalid():
             reports.distribution_stats(invalid)
 
 
-def test_frequency_table():
+def test_frequency_table_valid():
     """Frequency gives expected output"""
     d_index = ["0", "1", "2", "3", "8"]
     expected_data = {
@@ -135,6 +135,23 @@ def test_frequency_table():
     table = reports.frequency_table(TEST_DF["NUMBER OF PERSONS INJURED"])
     assert isinstance(table, pd.DataFrame)
     assert expected_df.equals(table)
+
+
+def test_frequency_table_invalid():
+    """Invalid data type raises Type error"""
+    invalid_types = [
+        TEST_DF,
+        "data",
+        34,
+        34.5,
+        {"data": "dictionary"},
+        [["col_name", 1], ["col_name2", 2]],
+        (("col_name", 3), ("col_name2", 4)),
+        np.array([1, 2, 3]),
+    ]
+    for invalid in invalid_types:
+        with pytest.raises(TypeError):
+            reports.frequency_table(invalid)
 
 
 def test_DataFrameReport():

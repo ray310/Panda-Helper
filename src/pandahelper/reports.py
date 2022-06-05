@@ -101,7 +101,12 @@ def frequency_table(series):
     Returns:
         pd.DataFrame: DataFrame containing values as the row index with value
             counts and counts as a percentage of total count.
+
+    Raises:
+        TypeError: If input is not agit s pd.Series.
     """
+    if not isinstance(series, pd.Series):
+        raise TypeError(f"{series}, is not pd.Series")
     freq = series.value_counts()  # excludes nulls
     freq.name = "Count"
     counts = series.value_counts(normalize=True)
