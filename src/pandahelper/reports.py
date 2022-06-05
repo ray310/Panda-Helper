@@ -103,7 +103,7 @@ def frequency_table(series):
             counts and counts as a percentage of total count.
 
     Raises:
-        TypeError: If input is not agit s pd.Series.
+        TypeError: If input is not a pd.Series.
     """
     if not isinstance(series, pd.Series):
         raise TypeError(f"{series}, is not pd.Series")
@@ -131,14 +131,18 @@ class DataFrameProfile:
         nulls_per_row (pd.Series): Count of null values per row.
         nulls_stats (list): Distribution statistics on nulls per row.
     """
-
     def __init__(self, df, name=""):
         """Initializes DataFrameProfile.
 
         Args:
             df (pd.DataFrame): DataFrame to profile.
             name (str, optional): Name to assign to profile.
+
+        Raises:
+            TypeError: If input is not a pd.DataFrame.
         """
+        if not isinstance(df, pd.DataFrame):
+            raise TypeError(f"{df}, is not pd.DataFrame")
         self.name = name
         self.shape = df.shape
         self.dtypes = list(zip(df.dtypes.index, df.dtypes.values))
@@ -192,7 +196,12 @@ class SeriesProfile:
 
         Args:
             series (pd.Series): DataFrame to profile.
+
+        Raises:
+            TypeError: If input is not a pd.Series.
         """
+        if not isinstance(series, pd.Series):
+            raise TypeError(f"{series}, is not pd.DataFrame")
         self.name = series.name
         self.dtype = series.dtype
         self.count = series.count()  # counts non-null values

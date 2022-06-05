@@ -12,6 +12,8 @@ from src.pandahelper import reports
 TEST_DATA_DIR = "tests/test_data"
 TEST_DATA_FILE = "sample_collisions.csv"
 TEST_DF = pd.read_csv(os.path.join(TEST_DATA_DIR, TEST_DATA_FILE))
+TEST_CAT_SERIES = TEST_DF["BOROUGH"]
+TEST_NUM_SERIES = TEST_DF["NUMBER OF PERSONS INJURED"]
 
 
 def test_abbreviate_df_invalid_input():
@@ -154,7 +156,7 @@ def test_frequency_table_invalid():
             reports.frequency_table(invalid)
 
 
-def test_DataFrameReport():
+def test_DataFrameReport_valid():
     """Generated DataFrame report should match test report"""
     comparison_report = "test_df_profile.txt"
     compare_file = os.path.join(TEST_DATA_DIR, comparison_report)
@@ -164,7 +166,25 @@ def test_DataFrameReport():
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
-def test_SeriesReport():
+def test_DataFrameReport_invalid():
+    """DataFrame profile should not accept invalid data types"""
+    invalid_types = [
+        TEST_CAT_SERIES,
+        TEST_NUM_SERIES,
+        "data",
+        34,
+        34.5,
+        {"data": "dictionary"},
+        [["col_name", 1], ["col_name2", 2]],
+        (("col_name", 3), ("col_name2", 4)),
+        np.array([1, 2, 3]),
+    ]
+    for invalid in invalid_types:
+        with pytest.raises(TypeError):
+            reports.DataFrameProfile(invalid)
+
+
+def test_SeriesReport_valid():
     """Generated Series report should match test report"""
     comparison_report = "test_series_injured_profile.txt"
     compare_file = os.path.join(TEST_DATA_DIR, comparison_report)
@@ -174,3 +194,20 @@ def test_SeriesReport():
             test_file
         )
         assert filecmp.cmp(compare_file, test_file, shallow=False)
+
+
+def test_SeriesReport_invalid():
+    """DataFrame profile should not accept invalid data types"""
+    invalid_types = [
+        TEST_DF,
+        "data",
+        34,
+        34.5,
+        {"data": "dictionary"},
+        [["col_name", 1], ["col_name2", 2]],
+        (("col_name", 3), ("col_name2", 4)),
+        np.array([1, 2, 3]),
+    ]
+    for invalid in invalid_types:
+        with pytest.raises(TypeError):
+            reports.SeriesProfile(invalid)
