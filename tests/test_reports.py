@@ -41,7 +41,7 @@ def test_abbreviate_df_valid_output():
 
 
 def test_abbreviate_df_most_plus_least_greater_sum():
-    """Returns itself if first + last parameters exceede object length"""
+    """Returns itself if (first + last) parameters exceed object length"""
     first = 300
     last = 300
     assert len(TEST_DF) < first + last
@@ -112,7 +112,7 @@ def test_distribution_stats_invalid():
     """Invalid data type raises Type error"""
     invalid_types = [
         TEST_DF,
-        TEST_DF["BOROUGH"],  # pd.Series
+        TEST_CAT_SERIES,
         "data",
         34,
         34.5,
@@ -156,17 +156,23 @@ def test_frequency_table_invalid():
             reports.frequency_table(invalid)
 
 
-def test_DataFrameReport_valid():
-    """Generated DataFrame report should match test report"""
-    comparison_report = "test_df_profile.txt"
-    compare_file = os.path.join(TEST_DATA_DIR, comparison_report)
+def test_DataFrameProfile_valid():
+    """Generated DataFrame profile should match test profile"""
+    compare_profile_name = "test_df_profile_name.txt"
+    compare_profile_no_name = "test_df_profile_no_name.txt"
+    compare_files = [
+        os.path.join(TEST_DATA_DIR, compare_profile_name),
+        os.path.join(TEST_DATA_DIR, compare_profile_no_name),
+    ]
+    names = ["test_name", ""]
     with tempfile.TemporaryDirectory() as tmp:
-        test_file = os.path.join(tmp, "temp.txt")
-        reports.DataFrameProfile(TEST_DF, name="test_name").save_report(test_file)
-        assert filecmp.cmp(compare_file, test_file, shallow=False)
+        for name, compare_file in zip(names, compare_files):
+            test_file = os.path.join(tmp, "temp.txt")
+            reports.DataFrameProfile(TEST_DF, name=name).save_report(test_file)
+            assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
-def test_DataFrameReport_invalid():
+def test_DataFrameProfile_invalid():
     """DataFrame profile should not accept invalid data types"""
     invalid_types = [
         TEST_CAT_SERIES,
@@ -184,19 +190,27 @@ def test_DataFrameReport_invalid():
             reports.DataFrameProfile(invalid)
 
 
-def test_SeriesReport_valid():
-    """Generated Series report should match test report"""
-    comparison_report = "test_series_injured_profile.txt"
-    compare_file = os.path.join(TEST_DATA_DIR, comparison_report)
+def test_SeriesProfile_valid_numerical():
+    """Generated Series profile for numerical data should match test profile"""
+    comparison_profile = "test_series_injured_profile.txt"
+    compare_file = os.path.join(TEST_DATA_DIR, comparison_profile)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
-        reports.SeriesProfile(TEST_DF["NUMBER OF PERSONS INJURED"]).save_report(
-            test_file
-        )
+        reports.SeriesProfile(TEST_NUM_SERIES).save_report(test_file)
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
-def test_SeriesReport_invalid():
+def test_SeriesProfile_valid_categorical():
+    """Generated Series profile for categorical should match test profile"""
+    comparison_profile = "test_series_borough_profile.txt"
+    compare_file = os.path.join(TEST_DATA_DIR, comparison_profile)
+    with tempfile.TemporaryDirectory() as tmp:
+        test_file = os.path.join(tmp, "temp.txt")
+        reports.SeriesProfile(TEST_CAT_SERIES).save_report(test_file)
+        assert filecmp.cmp(compare_file, test_file, shallow=False)
+
+
+def test_SeriesProfile_invalid():
     """DataFrame profile should not accept invalid data types"""
     invalid_types = [
         TEST_DF,

@@ -1,0 +1,17 @@
+BOROUGH Info
+--------------  ------
+Data Type       object
+Count           127
+Unique Values   5
+Null Values     73
+
+Value            Count  % of total
+-------------  -------  ------------
+MANHATTAN           40  31.50%
+QUEENS              35  27.56%
+BROOKLYN            30  23.62%
+BRONX               19  14.96%
+STATEN ISLAND        3  2.36%
+
+
+
