@@ -1,0 +1,16 @@
+# file types
+*.docx
+*.env
+*.ipynb
+*.pages
+
+# patterns
+*.egg-info*
+
+# folders
+.coverage
+data
+dev
+dist
+htmlcov
+__pycache__
