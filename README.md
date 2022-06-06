@@ -1,5 +1,5 @@
 # Panda-Helper: Quickly and easily inspect data
-Panda-Helper creates data profiles for Pandas DataFrames and Series
+Panda-Helper is a simple data-profiling utility for Pandas DataFrames and Series
 
 Assess data quality and usefulness with minimal effort
 
