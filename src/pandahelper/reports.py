@@ -131,6 +131,7 @@ class DataFrameProfile:
         nulls_per_row (pd.Series): Count of null values per row.
         nulls_stats (list): Distribution statistics on nulls per row.
     """
+
     def __init__(self, df, name=""):
         """Initializes DataFrameProfile.
 
