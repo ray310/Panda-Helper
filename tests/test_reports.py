@@ -7,7 +7,7 @@ import filecmp
 import numpy as np
 import pandas as pd
 import pytest
-from src.pandahelper import reports
+from pandahelper import reports
 
 TEST_DATA_DIR = "tests/test_data"
 TEST_DATA_FILE = "sample_collisions.csv"
