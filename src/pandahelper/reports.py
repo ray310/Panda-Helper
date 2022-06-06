@@ -62,7 +62,14 @@ def distribution_stats(series):
 
     Returns:
         dict: Key-value pairs with name of statistic and calculated value.
+
+    Raises:
+        TypeError: If input is not a numeric pd.Series.
     """
+    if not isinstance(series, pd.Series):
+        raise TypeError(f"{series}, is not pd.Series")
+    if not pd.api.types.is_numeric_dtype(series.dtype):
+        raise TypeError(f"{series}, is not numeric")
     mad = scipy.stats.median_abs_deviation(series, nan_policy="omit")
     stats = {
         "count": series.count(),
@@ -94,7 +101,12 @@ def frequency_table(series):
     Returns:
         pd.DataFrame: DataFrame containing values as the row index with value
             counts and counts as a percentage of total count.
+
+    Raises:
+        TypeError: If input is not a pd.Series.
     """
+    if not isinstance(series, pd.Series):
+        raise TypeError(f"{series}, is not pd.Series")
     freq = series.value_counts()  # excludes nulls
     freq.name = "Count"
     counts = series.value_counts(normalize=True)
@@ -119,14 +131,18 @@ class DataFrameProfile:
         nulls_per_row (pd.Series): Count of null values per row.
         nulls_stats (list): Distribution statistics on nulls per row.
     """
-
     def __init__(self, df, name=""):
         """Initializes DataFrameProfile.
 
         Args:
             df (pd.DataFrame): DataFrame to profile.
             name (str, optional): Name to assign to profile.
+
+        Raises:
+            TypeError: If input is not a pd.DataFrame.
         """
+        if not isinstance(df, pd.DataFrame):
+            raise TypeError(f"{df}, is not pd.DataFrame")
         self.name = name
         self.shape = df.shape
         self.dtypes = list(zip(df.dtypes.index, df.dtypes.values))
@@ -180,7 +196,12 @@ class SeriesProfile:
 
         Args:
             series (pd.Series): DataFrame to profile.
+
+        Raises:
+            TypeError: If input is not a pd.Series.
         """
+        if not isinstance(series, pd.Series):
+            raise TypeError(f"{series}, is not pd.DataFrame")
         self.name = series.name
         self.dtype = series.dtype
         self.count = series.count()  # counts non-null values
