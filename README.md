@@ -1,3 +1,4 @@
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/panda-helper)
 ![Tests Status](https://github.com/ray310/Panda-Helper/actions/workflows/pytest.yml/badge.svg)
 ![Lint/Format Status](https://github.com/ray310/Panda-Helper/actions/workflows/format_lint.yml/badge.svg)
 
