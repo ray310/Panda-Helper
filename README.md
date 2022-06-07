@@ -1,3 +1,6 @@
+![Tests Status](https://github.com/ray310/Panda-Helper/actions/workflows/pytest.yml/badge.svg?branch=main)
+![Lint/Format Status](https://github.com/ray310/Panda-Helper/actions/workflows/format_lint.yml/badge.svg?branch=main)
+
 # Panda-Helper: Quickly and easily inspect data
 Panda-Helper is a simple data-profiling utility for Pandas DataFrames and Series
 
