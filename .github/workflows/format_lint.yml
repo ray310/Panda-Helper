@@ -1,4 +1,4 @@
-name: Lint / Format check
+name: Lint/Format
 
 on: [push, pull_request]
 

@@ -15,7 +15,7 @@ def abbreviate_df(df, first=20, last=5):
         df (pd.DataFrame or pd.Series): pd.DataFrame or pd.Series
         first (int): First n rows of input to be included in the shortened
             Dataframe or Series. Default value is 20.
-        first (int): Last n rows of input to be included in the shortened
+        last (int): Last n rows of input to be included in the shortened
             Dataframe or Series. Default value is 5.
 
     Returns:
