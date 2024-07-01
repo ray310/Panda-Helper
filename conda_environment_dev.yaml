@@ -3,19 +3,22 @@ channels:
     - defaults
     - conda-forge
 dependencies:
-    - python=3.9
-    - black
-    - build
-    - coverage
-    - jupyter
-    - pandas
-    - pip
-    - pydocstyle
-    - pylint
-    - pytest
-    - notebook
-    - scipy
-    - sphinx
-    - twine
+    - python=3.12
+    - black=24.4.2
+    - build=0.7.0
+    - codespell=0.0.0
+    - coverage=7.2.2
+    - jupyter=1.0.0
+    - notebook=7.0.8
+    - numpy=1.26.4
+    - pandas=2.2.2
+    - pip=24.0
+    - pre-commit=3.4.0
+    - pydocstyle=6.3.0
+    - pylint=3.2.2
+    - pytest=7.4.4
+    - scipy=1.13.1
+    - sphinx=7.3.7
+    - twine=4.0.2
     - pip:
-        - tabulate
+        - tabulate=0.9.0
