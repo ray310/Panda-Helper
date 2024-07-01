@@ -9,8 +9,12 @@
 
 # folders
 .coverage
+.idea
 data
 dev
 dist
 htmlcov
 __pycache__
+
+# files
+.DS_Store
