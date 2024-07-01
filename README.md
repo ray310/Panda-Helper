@@ -1,6 +1,7 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/panda-helper)
 ![Tests Status](https://github.com/ray310/Panda-Helper/actions/workflows/pytest.yml/badge.svg)
 ![Lint/Format Status](https://github.com/ray310/Panda-Helper/actions/workflows/format_lint.yml/badge.svg)
+[![Download Stats](https://img.shields.io/pypi/dm/panda-helper)](https://pypistats.org/packages/panda-helper)
 
 # Panda-Helper: Quickly and easily inspect data
 Panda-Helper is a simple data-profiling utility for Pandas DataFrames and Series
@@ -23,7 +24,7 @@ _Vehicles passing through toll stations_
     -------------------------  ------------
     DF Shape                   (1586280, 6)
     Duplicated Rows             2184
-    
+
     Column Name                 Data Type
     --------------------------  -----------
     Plaza ID                    int64
@@ -32,7 +33,7 @@ _Vehicles passing through toll stations_
     Direction                   object
     # Vehicles - ETC (E-ZPass)  int64
     # Vehicles - Cash/VToll     int64
-    
+
     Summary of Nulls Per Row
     --------------------------  -----------
     count                       1.58628e+06
@@ -53,7 +54,7 @@ _Vehicles passing through toll stations_
 
 -----
 ### Series profiles report the:
-- Series data type 
+- Series data type
 - Count of non-null values in the series
 - Number of unique values
 - Count of null values
@@ -69,7 +70,7 @@ _Direction vehicles are traveling_
     Count             1586280
     Unique Values     2
     Null Values       0
-    
+
     Value      Count  % of total
     -------  -------  ------------
     I         814100  51.32%
@@ -84,7 +85,7 @@ _Hourly vehicle counts at tolling points_
     Count                              1586280
     Unique Values                      8987
     Null Values                        0
-    
+
       Value    Count  % of total
     -------  -------  ------------
           0     3137  0.20%
@@ -112,7 +113,7 @@ _Hourly vehicle counts at tolling points_
        8876        1  0.00%
        8261        1  0.00%
        8694        1  0.00%
-    
+
     Statistic                            Value
     -------------------------  ---------------
     count                          1.58628e+06
@@ -158,14 +159,14 @@ df_profile
     -------------------------  ------
     DF Shape                   (5, 4)
     Obviously Duplicated Rows  1
-    
+
     Column Name    Data Type
     -------------  -----------
     user_id        int64
     transaction    object
     amount         float64
     survey         object
-    
+
     Summary of Nulls Per Row
     --------------------------  --------
     count                       5
@@ -183,7 +184,7 @@ df_profile
     median absolute deviation   1
     standard deviation          0.83666
     skew                        0.512241
-    
+
 ```python
 df_profile.save_report("df_profile.txt")
 ```
@@ -200,13 +201,13 @@ series_profile
     Count          4
     Unique Values  3
     Null Values    1
-    
+
       Value    Count  % of total
     -------  -------  ------------
       85.12        2  50.00%
      100           1  25.00%
     1400           1  25.00%
-    
+
     Statistic                       Value
     -------------------------  ----------
     count                         4
@@ -224,7 +225,7 @@ series_profile
     median absolute deviation     7.44
     standard deviation          654.998
     skew                          1.99931
-    
+
 ```python
 series_profile.save_report("amount_profile.txt")
 ```
