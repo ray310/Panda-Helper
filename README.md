@@ -1,14 +1,15 @@
+![PyPI - Version](https://img.shields.io/pypi/v/panda-helper)
+[![Download Stats](https://img.shields.io/pypi/dm/panda-helper)](https://pypistats.org/packages/panda-helper)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/panda-helper)
 ![Tests Status](https://github.com/ray310/Panda-Helper/actions/workflows/pytest.yml/badge.svg)
 ![Lint/Format Status](https://github.com/ray310/Panda-Helper/actions/workflows/format_lint.yml/badge.svg)
-[![Download Stats](https://img.shields.io/pypi/dm/panda-helper)](https://pypistats.org/packages/panda-helper)
 
 # Panda-Helper: Quickly and easily inspect data
-Panda-Helper is a simple data-profiling utility for Pandas DataFrames and Series
+Panda-Helper is a simple data-profiling utility for Pandas' DataFrames and Series.
 
-Assess data quality and usefulness with minimal effort
+Assess data quality and usefulness with minimal effort.
 
-Quickly perform initial data exploration, _so you can move on to more in-depth analysis_
+Quickly perform initial data exploration, _so you can move on to more in-depth analysis_.
 
 -----
 ### DataFrame profiles:
@@ -142,7 +143,7 @@ __Profiling a DataFrame__<br>
 Create the DataFrameProfile and then display it or save the profile.
 ```python
 import pandas as pd
-import pandahelper.reports as ph
+import pandahelper as ph
 
 data = {
     "user_id": [1, 2, 3, 4, 4],
