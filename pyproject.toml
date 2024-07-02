@@ -34,3 +34,6 @@ classifiers = [
 Homepage = "https://github.com/ray310/Panda-Helper"
 Repository = "https://github.com/ray310/Panda-Helper"
 Issues = "https://github.com/ray310/Panda-Helper/issues"
+
+[project.optional-dependencies]
+test = ["pytest>=7.4"]
