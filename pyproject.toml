@@ -36,4 +36,4 @@ Repository = "https://github.com/ray310/Panda-Helper"
 Issues = "https://github.com/ray310/Panda-Helper/issues"
 
 [project.optional-dependencies]
-test = ["pytest>=7.4"]
+test = ["pytest>=7.4", "pylint>=3.0"]
