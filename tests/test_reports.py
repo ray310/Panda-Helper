@@ -8,7 +8,7 @@ import filecmp
 import numpy as np
 import pandas as pd
 import pytest
-from pandahelper import reports
+import pandahelper as ph
 
 TEST_DATA_DIR = "tests/test_data"
 TEST_DATA_FILE = "sample_collisions.csv"
@@ -18,7 +18,7 @@ TEST_NUM_SERIES = TEST_DF["NUMBER OF PERSONS INJURED"]
 
 
 def test_abbreviate_df_invalid_input():
-    """Invalid data type inputs should raise Type Error"""
+    """Invalid data type inputs should raise Type Error."""
     invalid_types = [
         "data",
         34,
@@ -30,27 +30,27 @@ def test_abbreviate_df_invalid_input():
     ]
     for invalid in invalid_types:
         with pytest.raises(TypeError):
-            reports.abbreviate_df(invalid)
+            ph.reports.abbreviate_df(invalid)
 
 
 def test_abbreviate_df_valid_output():
-    """Valid input should lead to valid and consistent output"""
-    output = reports.abbreviate_df(TEST_DF, 5, 5)
+    """Valid input should lead to valid and consistent output."""
+    output = ph.reports.abbreviate_df(TEST_DF, 5, 5)
     assert isinstance(output, (pd.DataFrame, pd.Series))
     assert output.iloc[1]["LOCATION"] == "(40.7504, -73.985214)"
     assert output.iloc[8]["COLLISION_ID"] == 3676178
 
 
 def test_abbreviate_df_most_plus_least_greater_sum():
-    """Returns itself if (first + last) parameters exceed object length"""
+    """Returns itself if (first + last) parameters exceed object length."""
     first = 300
     last = 300
     assert len(TEST_DF) < first + last
-    assert TEST_DF.equals(reports.abbreviate_df(TEST_DF, first, last))
+    assert TEST_DF.equals(ph.reports.abbreviate_df(TEST_DF, first, last))
 
 
 def test_abbreviate_df_negative_params():
-    """Negative parameters raise Value Error"""
+    """Negative parameters raise Value Error."""
     invalid_params = [
         {"first": -5, "last": 5},
         {"first": 5, "last": -5},
@@ -58,17 +58,17 @@ def test_abbreviate_df_negative_params():
     ]
     for invalid in invalid_params:
         with pytest.raises(ValueError):
-            reports.abbreviate_df(TEST_DF, **invalid)
+            ph.reports.abbreviate_df(TEST_DF, **invalid)
 
 
 def test_abbreviate_string_correct():
-    """Correctly abbreviates string"""
+    """Correctly abbreviates string."""
     test_str = "test" * 10
-    assert reports.abbreviate_string(test_str, limit=4) == "test"
+    assert ph.reports.abbreviate_string(test_str, limit=4) == "test"
 
 
 def test_abbreviate_string_invalid():
-    """Input of invalid data type raises Type Error"""
+    """Input of invalid data type raises Type Error."""
     invalid_types = [
         34,
         34.5,
@@ -80,12 +80,12 @@ def test_abbreviate_string_invalid():
     ]
     for invalid in invalid_types:
         with pytest.raises(TypeError):
-            reports.abbreviate_string(invalid)
+            ph.reports.abbreviate_string(invalid)
 
 
 def test_distribution_stats_valid():
-    """Valid data returns dictionary containing all statistics with numeric values"""
-    output = reports.distribution_stats(TEST_DF["NUMBER OF PERSONS INJURED"])
+    """Valid data returns dictionary containing all statistics with numeric values."""
+    output = ph.reports.distribution_stats(TEST_DF["NUMBER OF PERSONS INJURED"])
     assert isinstance(output, dict)
     stats = {
         "count": 200,
@@ -110,7 +110,7 @@ def test_distribution_stats_valid():
 
 
 def test_distribution_stats_invalid():
-    """Invalid data type raises Type error"""
+    """Invalid data type raises Type error."""
     invalid_types = [
         TEST_DF,
         TEST_CAT_SERIES,
@@ -124,24 +124,24 @@ def test_distribution_stats_invalid():
     ]
     for invalid in invalid_types:
         with pytest.raises(TypeError):
-            reports.distribution_stats(invalid)
+            ph.reports.distribution_stats(invalid)
 
 
 def test_frequency_table_valid():
-    """Frequency gives expected output"""
+    """Frequency gives expected output."""
     d_index = ["0", "1", "2", "3", "8"]
     expected_data = {
         "Count": [160, 29, 7, 3, 1],
         "% of Total": ["80.00%", "14.50%", "3.50%", "1.50%", "0.50%"],
     }
     expected_df = pd.DataFrame(expected_data, index=d_index)
-    table = reports.frequency_table(TEST_DF["NUMBER OF PERSONS INJURED"])
+    table = ph.frequency_table(TEST_DF["NUMBER OF PERSONS INJURED"])
     assert isinstance(table, pd.DataFrame)
     assert expected_df.equals(table)
 
 
 def test_frequency_table_invalid():
-    """Invalid data type raises Type error"""
+    """Invalid data type raises Type error."""
     invalid_types = [
         TEST_DF,
         "data",
@@ -154,11 +154,11 @@ def test_frequency_table_invalid():
     ]
     for invalid in invalid_types:
         with pytest.raises(TypeError):
-            reports.frequency_table(invalid)
+            ph.frequency_table(invalid)
 
 
-def test_DataFrameProfile_valid():
-    """Generated DataFrame profile should match test profile"""
+def test_dataframe_profile_valid():
+    """Generated DataFrame profile should match test profile."""
     compare_profile_name = "test_df_profile_name.txt"
     compare_profile_no_name = "test_df_profile_no_name.txt"
     compare_files = [
@@ -169,12 +169,12 @@ def test_DataFrameProfile_valid():
     with tempfile.TemporaryDirectory() as tmp:
         for name, compare_file in zip(names, compare_files):
             test_file = os.path.join(tmp, "temp.txt")
-            reports.DataFrameProfile(TEST_DF, name=name).save_report(test_file)
+            ph.DataFrameProfile(TEST_DF, name=name).save_report(test_file)
             assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
-def test_DataFrameProfile_invalid():
-    """DataFrame profile should not accept invalid data types"""
+def test_dataframe_profile_invalid():
+    """DataFrame profile should not accept invalid data types."""
     invalid_types = [
         TEST_CAT_SERIES,
         TEST_NUM_SERIES,
@@ -188,31 +188,31 @@ def test_DataFrameProfile_invalid():
     ]
     for invalid in invalid_types:
         with pytest.raises(TypeError):
-            reports.DataFrameProfile(invalid)
+            ph.DataFrameProfile(invalid)
 
 
-def test_SeriesProfile_valid_numerical():
-    """Generated Series profile for numerical data should match test profile"""
+def test_series_profile_valid_numerical():
+    """Generated Series profile for numerical data should match test profile."""
     comparison_profile = "test_series_injured_profile.txt"
     compare_file = os.path.join(TEST_DATA_DIR, comparison_profile)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
-        reports.SeriesProfile(TEST_NUM_SERIES).save_report(test_file)
+        ph.SeriesProfile(TEST_NUM_SERIES).save_report(test_file)
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
-def test_SeriesProfile_valid_categorical():
-    """Generated Series profile for categorical should match test profile"""
+def test_series_profile_valid_categorical():
+    """Generated Series profile for categorical should match test profile."""
     comparison_profile = "test_series_borough_profile.txt"
     compare_file = os.path.join(TEST_DATA_DIR, comparison_profile)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
-        reports.SeriesProfile(TEST_CAT_SERIES).save_report(test_file)
+        ph.SeriesProfile(TEST_CAT_SERIES).save_report(test_file)
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
-def test_SeriesProfile_invalid():
-    """DataFrame profile should not accept invalid data types"""
+def test_series_profile_invalid():
+    """DataFrame profile should not accept invalid data types."""
     invalid_types = [
         TEST_DF,
         "data",
@@ -225,4 +225,4 @@ def test_SeriesProfile_invalid():
     ]
     for invalid in invalid_types:
         with pytest.raises(TypeError):
-            reports.SeriesProfile(invalid)
+            ph.SeriesProfile(invalid)
