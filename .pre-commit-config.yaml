@@ -28,11 +28,12 @@ repos:
         language: python
         types: [python]
         require_serial: true
-        stages: [pre-commit]
+        stages: [pre-commit, pre-push]
         args: ["--verbose"]
     -   id: pytest
         name: pytest
         entry: pytest
         language: python
-        types: [ python ]
-        stages: [pre-commit]
+        types: [python]
+        stages: [pre-commit, pre-push]
+        always_run: true
