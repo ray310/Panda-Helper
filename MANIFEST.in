@@ -1,2 +1,1 @@
 recursive-include tests *.py *.txt *csv
-include requirements.txt
