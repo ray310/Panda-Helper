@@ -1,8 +1,10 @@
 """ Tests for helper functions and profile classes in reports.py"""
 
+from datetime import datetime
 import os
 import math
 import numbers
+import re
 import tempfile
 import filecmp
 import numpy as np
@@ -30,12 +32,12 @@ def test_abbreviate_df_invalid_input():
     ]
     for invalid in invalid_types:
         with pytest.raises(TypeError):
-            ph.reports.abbreviate_df(invalid)
+            ph.reports._abbreviate_df(invalid)  # pylint: disable=W0212
 
 
 def test_abbreviate_df_valid_output():
     """Valid input should lead to valid and consistent output."""
-    output = ph.reports.abbreviate_df(TEST_DF, 5, 5)
+    output = ph.reports._abbreviate_df(TEST_DF, 5, 5)  # pylint: disable=W0212
     assert isinstance(output, (pd.DataFrame, pd.Series))
     assert output.iloc[1]["LOCATION"] == "(40.7504, -73.985214)"
     assert output.iloc[8]["COLLISION_ID"] == 3676178
@@ -46,7 +48,9 @@ def test_abbreviate_df_most_plus_least_greater_sum():
     first = 300
     last = 300
     assert len(TEST_DF) < first + last
-    assert TEST_DF.equals(ph.reports.abbreviate_df(TEST_DF, first, last))
+    assert TEST_DF.equals(
+        ph.reports._abbreviate_df(TEST_DF, first, last)  # pylint: disable=W0212
+    )
 
 
 def test_abbreviate_df_negative_params():
@@ -58,13 +62,15 @@ def test_abbreviate_df_negative_params():
     ]
     for invalid in invalid_params:
         with pytest.raises(ValueError):
-            ph.reports.abbreviate_df(TEST_DF, **invalid)
+            ph.reports._abbreviate_df(TEST_DF, **invalid)  # pylint: disable=W0212
 
 
 def test_abbreviate_string_correct():
     """Correctly abbreviates string."""
     test_str = "test" * 10
-    assert ph.reports.abbreviate_string(test_str, limit=4) == "test"
+    # fmt: off
+    assert ph.reports._abbreviate_string(test_str, limit=4) == "test"  # pylint: disable=W0212
+    # fmt: on
 
 
 def test_abbreviate_string_invalid():
@@ -80,11 +86,11 @@ def test_abbreviate_string_invalid():
     ]
     for invalid in invalid_types:
         with pytest.raises(TypeError):
-            ph.reports.abbreviate_string(invalid)
+            ph.reports._abbreviate_string(invalid)  # pylint: disable=W0212
 
 
-def test_distribution_stats_valid():
-    """Valid data returns dictionary containing all statistics with numeric values."""
+def test_distribution_stats():
+    """Return dictionary containing all statistics with numeric values."""
     output = ph.reports.distribution_stats(TEST_DF["NUMBER OF PERSONS INJURED"])
     assert isinstance(output, dict)
     stats = {
@@ -109,11 +115,182 @@ def test_distribution_stats_valid():
         assert math.isclose(output[key], val)
 
 
+def test_distribution_stats_int_float():
+    """Int64 and float64 series should return all summary stats."""
+    series = [
+        pd.Series(list(range(10))),  # int64
+        pd.Series(list(np.arange(0.0, 10, 1))),  # float64
+        pd.Series([np.nan] * 10),  # float64
+    ]
+    expected_stats = [
+        "count",
+        "min",
+        "1%",
+        "5%",
+        "25%",
+        "50%",
+        "75%",
+        "95%",
+        "99%",
+        "max",
+        "mean",
+        "standard deviation",
+        "median",
+        "median absolute deviation",
+        "skew",
+    ]
+    for s in series:
+        ds = ph.distribution_stats(s)
+        assert list(ds.keys()) == expected_stats  # also checks order
+
+
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
+def test_distribution_stats_infinity():
+    """Series should return all summary stats though some are nan."""
+    series = pd.Series([float("inf"), 1, 2, 3])
+    expected_stats = [
+        "count",
+        "min",
+        "1%",
+        "5%",
+        "25%",
+        "50%",
+        "75%",
+        "95%",
+        "99%",
+        "max",
+        "mean",
+        "standard deviation",
+        "median",
+        "median absolute deviation",
+        "skew",
+    ]
+    ds = ph.distribution_stats(series)
+    assert list(ds.keys()) == expected_stats  # also checks order
+
+
+def test_distribution_stats_bool():
+    """Boolean series should return below summary stats."""
+    series = pd.Series([bool(x % 2) for x in range(10)], name="bool")  # bool
+    expected_stats = [
+        "count",
+        "min",
+        "max",
+        "mean",
+    ]
+    ds = ph.distribution_stats(series)
+    assert list(ds.keys()) == expected_stats  # also checks order
+
+
+def test_distribution_stats_complex():
+    """Complex series should return below summary stats."""
+    series = pd.Series([complex(x, x) for x in range(10)])  # complex128
+    expected_stats = [
+        "count",
+        "min",
+        "max",
+        "mean",
+        "median",
+    ]
+    ds = ph.distribution_stats(series)
+    assert list(ds.keys()) == expected_stats  # also checks order
+
+
+def test_distribution_stats_timestamp():
+    """Pd.Timestamp series should return below summary stats."""
+    start = datetime(year=1999, month=1, day=1)
+    end = datetime(year=1999, month=1, day=11)
+    series = pd.Series(pd.date_range(start, end, freq="bh"))  # datetime64[ns]
+    expected_stats = [
+        "count",
+        "min",
+        "1%",
+        "5%",
+        "25%",
+        "50%",
+        "75%",
+        "95%",
+        "99%",
+        "max",
+        "mean",
+        "standard deviation",
+        "median",
+    ]
+    ds = ph.distribution_stats(series)
+    assert list(ds.keys()) == expected_stats  # also checks order
+
+
+def test_distribution_stats_timedelta():
+    """Pd.Timedelta series should return below summary stats."""
+    dur = pd.Timedelta(days=10)
+    series = pd.Series([dur * x for x in range(10)])  # timedelta64[ns]
+    expected_stats = [
+        "count",
+        "min",
+        "1%",
+        "5%",
+        "25%",
+        "50%",
+        "75%",
+        "95%",
+        "99%",
+        "max",
+        "mean",
+        "standard deviation",
+        "median",
+        "median absolute deviation",
+    ]
+    ds = ph.distribution_stats(series)
+    assert list(ds.keys()) == expected_stats  # also checks order
+
+
+def test_distribution_stats_period():
+    """Pd.Period series should return below summary stats."""
+    start = datetime(year=1999, month=1, day=1)
+    dur = pd.Timedelta(days=10)
+    series = pd.Series(
+        [pd.Period(start + (dur * x), "M") for x in range(10)]
+    )  # period[M]
+    expected_stats = [
+        "count",
+        "min",
+        "1%",
+        "5%",
+        "25%",
+        "50%",
+        "75%",
+        "95%",
+        "99%",
+        "max",
+        "median",
+    ]
+    ds = ph.distribution_stats(series)
+    assert list(ds.keys()) == expected_stats  # also checks order
+
+
+def test_distribution_stats_interval():
+    """Pd.Interval series should return below summary stats."""
+    series = pd.Series(
+        [pd.Interval(left=x, right=x + 2) for x in range(10)]
+    )  # interval[int64, right]
+    expected_stats = [
+        "count",
+        "min",
+        "max",
+    ]
+    ds = ph.distribution_stats(series)
+    assert list(ds.keys()) == expected_stats  # also checks order
+
+
 def test_distribution_stats_invalid():
     """Invalid data type raises Type error."""
+    start = datetime(year=1999, month=1, day=1)
+    end = datetime(year=1999, month=1, day=11)
     invalid_types = [
         TEST_DF,
         TEST_CAT_SERIES,
+        pd.Series(["Aa", "Bb", "Cc", "Dd", "Cc"], dtype="category"),
+        pd.DatetimeIndex(pd.date_range(start, end, freq="bh")),
         "data",
         34,
         34.5,
@@ -191,8 +368,8 @@ def test_dataframe_profile_invalid():
             ph.DataFrameProfile(invalid)
 
 
-def test_series_profile_valid_numerical():
-    """Generated Series profile for numerical data should match test profile."""
+def test_series_profile_text_valid_numerical_format():
+    """Text version of SeriesProfile for numerical data matches test profile."""
     comparison_profile = "test_series_injured_profile.txt"
     compare_file = os.path.join(TEST_DATA_DIR, comparison_profile)
     with tempfile.TemporaryDirectory() as tmp:
@@ -201,8 +378,8 @@ def test_series_profile_valid_numerical():
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
-def test_series_profile_valid_categorical():
-    """Generated Series profile for categorical should match test profile."""
+def test_series_profile_text_valid_object_format():
+    """Text version of SeriesProfile for categorical data matches test profile."""
     comparison_profile = "test_series_borough_profile.txt"
     compare_file = os.path.join(TEST_DATA_DIR, comparison_profile)
     with tempfile.TemporaryDirectory() as tmp:
@@ -211,8 +388,81 @@ def test_series_profile_valid_categorical():
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
+def test_series_profile_series_dtypes():
+    """pd.Series should create SeriesProfile for allowed data types."""
+    start = datetime(year=1999, month=1, day=1)
+    dur = pd.Timedelta(days=10)
+    end = start + dur
+    series = [
+        pd.Series(list(range(10))),  # int64
+        pd.Series(list(np.arange(0.0, 10, 1))),  # float64
+        pd.Series([bool(x % 2) for x in range(10)], name="bool"),  # bool
+        pd.Series([complex(x, x) for x in range(10)]),  # complex128
+        pd.Series(["Aa", "Bb", "Cc", "Dd", "Cc"]),  # object
+        pd.Series(["Aa", "Bb", "Cc", "Dd", "Cc"], dtype="category"),  # category
+        pd.Series(pd.date_range(start, end, freq="bh")),  # datetime64[ns]
+        pd.Series([dur * x for x in range(10)]),  # timedelta64[ns]
+        pd.Series([pd.Period(start + (dur * x), "M") for x in range(10)]),  # period[M]
+        pd.Series(
+            [pd.Interval(left=x, right=x + 2) for x in range(10)]
+        ),  # interval[int64, right]
+        pd.Series([None] * 10),  # object
+        pd.Series([np.nan] * 10),  # float64
+    ]
+    for s in series:
+        try:
+            ph.SeriesProfile(s)
+        except Exception as ex:
+            print(s)
+            raise ex
+
+
+def test_series_profile_singleton():
+    """Profile should be generated for series with single item."""
+    start = datetime(year=1999, month=1, day=1)
+    dur = pd.Timedelta(days=0)
+    end = start + dur
+    series = [
+        pd.Series(list(range(1))),  # int64
+        pd.Series(list(np.arange(0.0, 1, 1))),  # float64
+        pd.Series([bool(x % 2) for x in range(1)], name="bool"),  # bool
+        pd.Series([complex(x, x) for x in range(1)]),  # complex128
+        pd.Series(["Aa"]),  # object
+        pd.Series(["Aa"], dtype="category"),  # category
+        pd.Series(pd.date_range(start, end, freq="bh")),  # datetime64[ns]
+        pd.Series([dur * x for x in range(1)]),  # timedelta64[ns]
+        pd.Series([pd.Period(start + (dur * x), "M") for x in range(1)]),  # period[M]
+        pd.Series(
+            [pd.Interval(left=x, right=x + 2) for x in range(1)]
+        ),  # interval[int64, right]
+        pd.Series([None] * 1),  # object
+        pd.Series([np.nan] * 1),  # float64
+    ]
+    for s in series:
+        try:
+            ph.SeriesProfile(s)
+        except Exception as ex:
+            print(s)
+            raise ex
+
+
+def test_series_profile_complex():
+    """Profile for complex series should contain and display imaginary component."""
+    series = pd.Series([complex(x, x) for x in range(10)])
+    profile = ph.SeriesProfile(series)
+    expected_stats = {
+        "count": 10,
+        "min": 0j,
+        "max": (9 + 9j),
+        "mean": (4.5 + 4.5j),
+        "median": (4.5 + 4.5j),
+    }
+    assert profile.stats == expected_stats
+    assert re.findall("mean\\s+[(]4.5[+]4.5j[)]", repr(profile))
+
+
 def test_series_profile_invalid():
-    """DataFrame profile should not accept invalid data types."""
+    """Series profile should not accept invalid data types."""
     invalid_types = [
         TEST_DF,
         "data",
@@ -222,6 +472,8 @@ def test_series_profile_invalid():
         [["col_name", 1], ["col_name2", 2]],
         (("col_name", 3), ("col_name2", 4)),
         np.array([1, 2, 3]),
+        pd.arrays.IntervalArray([pd.Interval(0, 1), pd.Interval(1, 5)]),
+        pd.Index(range(10)),
     ]
     for invalid in invalid_types:
         with pytest.raises(TypeError):

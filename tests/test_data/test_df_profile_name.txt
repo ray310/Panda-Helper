@@ -49,9 +49,9 @@ min                           3
 95%                          12
 99%                          14.01
 max                          15
-median                        8
 mean                          8.71
-median absolute deviation     1
 standard deviation            2.04863
+median                        8
+median absolute deviation     1
 skew                          0.36218
 
