@@ -1,6 +1,6 @@
 DataFrame-Level Info
 ----------------------  ---------
-DF Shape                (200, 29)
+DF Shape                (200, 30)
 Duplicated Rows         0
 
 Series Name                    Data Type
@@ -34,6 +34,7 @@ VEHICLE TYPE CODE 2            object
 VEHICLE TYPE CODE 3            object
 VEHICLE TYPE CODE 4            object
 VEHICLE TYPE CODE 5            object
+FLAG                           bool
 
 Summary of Nulls Per Row
 --------------------------  ---------
@@ -47,9 +48,8 @@ min                           3
 95%                          12
 99%                          14.01
 max                          15
-median                        8
 mean                          8.71
-median absolute deviation     1
 standard deviation            2.04863
+median                        8
+median absolute deviation     1
 skew                          0.36218
-

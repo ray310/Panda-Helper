@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "panda-helper"
+version = "0.0.3"
+dependencies = [
+  "pandas>=2.0",
+  "scipy>=1.11",
+  "tabulate",
+]
+requires-python = ">=3.9"
+authors = [
+    {name = "Ray310", email = "ray310@pm.me"},
+]
+readme = "README.md"
+description = "Data profiler for Pandas"
+keywords = ["data-profiling", "data-profiling-utility", "data-analysis"]
+license = {file = "LICENSE"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+
+[project.urls]
+Homepage = "https://ray310.github.io/Panda-Helper/"
+Repository = "https://github.com/ray310/Panda-Helper"
+Issues = "https://github.com/ray310/Panda-Helper/issues"
+
+[project.optional-dependencies]
+test = ["pytest>=7.4", "pylint>=3.0"]
