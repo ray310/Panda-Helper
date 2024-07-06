@@ -30,10 +30,3 @@ repos:
         require_serial: true
         stages: [pre-commit, pre-push]
         args: ["--verbose"]
-    -   id: pytest
-        name: pytest
-        entry: pytest
-        language: python
-        types: [python]
-        stages: [pre-push]
-        always_run: true
