@@ -10,6 +10,7 @@ ____
 - Switch project build to pyproject.toml [gh-18](https://github.com/ray310/Panda-Helper/issues/18)
 - Simplify import: `import pandahelper` now imports `DataFrameProfile`, `SeriesProfile`, `frequency_table`, and `distribution_stats` [gh-17](https://github.com/ray310/Panda-Helper/issues/17)
 - Improved `SeriesProfile` to better handle different data types. [gh-19](https://github.com/ray310/Panda-Helper/issues/19)
+- Removed excess trailing whitespace on reports [gh-21](https://github.com/ray310/Panda-Helper/issues/21)
 ____
 ## 0.0.2 - 2022-06-07
 ### Added
