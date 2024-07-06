@@ -1,6 +1,7 @@
 """Panda-Helper Classes and associated helper functions."""
 
 from warnings import warn
+import numpy as np
 import pandas as pd
 import pandas.api.types as pat
 import scipy.stats
@@ -103,10 +104,11 @@ def distribution_stats(series):
     if pd.api.types.is_bool_dtype(series.dtype):
         return _order_stats(stats)
 
-    stats["median"] = series.median()
     if pd.api.types.is_complex_dtype(series.dtype):
+        stats["median"] = np.median(series)  # pd.median struggles here
         return _order_stats(stats)
 
+    stats["median"] = series.median()
     _add_quantiles(series, stats)
     stats["standard deviation"] = series.std()
     if pd.api.types.is_datetime64_any_dtype(series.dtype):

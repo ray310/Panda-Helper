@@ -458,6 +458,12 @@ def test_series_profile_complex():
         "median": (4.5 + 4.5j),
     }
     assert profile.stats == expected_stats
+
+
+def test_series_profile_complex_format():
+    """Profile for complex series should contain and display imaginary component."""
+    series = pd.Series([complex(x, x) for x in range(10)])
+    profile = ph.SeriesProfile(series)
     assert re.findall("mean\\s+[(]4.5[+]4.5j[)]", repr(profile))
 
 
