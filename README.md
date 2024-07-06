@@ -60,7 +60,7 @@ _Vehicles passing through toll stations_
 - Number of unique values
 - Count of null values
 - Counts and frequency of the most and least common values
-- Distribution statistics for numeric data
+- Distribution statistics for numeric-like data
 
 __Sample profile of categorical data__<br>
 _Direction vehicles are traveling_
