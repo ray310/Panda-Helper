@@ -35,5 +35,5 @@ repos:
         entry: pytest
         language: python
         types: [python]
-        stages: [pre-commit, pre-push]
+        stages: [pre-push]
         always_run: true

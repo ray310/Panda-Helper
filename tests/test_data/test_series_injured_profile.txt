@@ -30,4 +30,3 @@ standard deviation           0.808249
 median                       0
 median absolute deviation    0
 skew                         5.3412
-

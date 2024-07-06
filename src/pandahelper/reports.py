@@ -235,7 +235,8 @@ class DataFrameProfile:
             list(self.null_stats.items()), headers=["Summary of Nulls Per Row", ""]
         )
         output = ["".join([x, "\n\n"]) for x in [df_table, dtype_table, null_table]]
-        return "".join(output)
+        output = "".join(output).strip()
+        return output + "\n"
 
     def save_report(self, path):
         """Save profile to provided path.
@@ -311,7 +312,8 @@ class SeriesProfile:
                 stats = {k: str(v) for k, v in self.stats.items()}
             stats_table = tabulate(list(stats.items()), headers=["Statistic", "Value"])
         output = ["".join([x, "\n\n"]) for x in [series_table, freq_table, stats_table]]
-        return "".join(output)
+        output = "".join(output).strip()
+        return output + "\n"
 
     def save_report(self, path):
         """Save profile to provided path.

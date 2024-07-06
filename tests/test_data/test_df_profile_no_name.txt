@@ -53,4 +53,3 @@ standard deviation            2.04863
 median                        8
 median absolute deviation     1
 skew                          0.36218
-

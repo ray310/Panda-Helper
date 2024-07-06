@@ -12,6 +12,3 @@ QUEENS              35  27.56%
 BROOKLYN            30  23.62%
 BRONX               19  14.96%
 STATEN ISLAND        3  2.36%
-
-
-
