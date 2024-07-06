@@ -31,7 +31,7 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ray310/Panda-Helper"
+Homepage = "https://ray310.github.io/Panda-Helper/"
 Repository = "https://github.com/ray310/Panda-Helper"
 Issues = "https://github.com/ray310/Panda-Helper/issues"
 
