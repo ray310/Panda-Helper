@@ -4,7 +4,7 @@
 ### Added
 - Improved project documentation
 ____
-## 0.0.3 - Soon to be released
+## 0.0.3 - 2024-07-06
 ### Added
 - Update for Python 3.12
 - Switch project build to pyproject.toml [gh-18](https://github.com/ray310/Panda-Helper/issues/18)
