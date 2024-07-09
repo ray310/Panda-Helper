@@ -512,3 +512,30 @@ def test_series_profile_html():
     assert len(tables[2].find_all("tr")) == 16  # 15 dist stats + head row
     first_td = tables[2].find("td")
     assert first_td["style"] == "font-family: monospace, monospace; text-align: left;"
+
+
+def test_series_profile_frequency_table():
+    """Valid values for frequency table should produce tables of desired length."""
+    most_least_tuples = {
+        (200, 200): 150,  # only 150 unique values
+        (70, 70): 140,
+        (1, 1): 2,
+        (1, 0): 1,
+        (0, 1): 1,
+        (0, 0): 0,
+    }
+    for k, v in most_least_tuples.items():
+        profile = ph.SeriesProfile(TEST_DF["CRASH TIME"], freq_most_least=k)
+        # fmt: off
+        soup = bs4.BeautifulSoup(profile._repr_html_(), "html.parser")  # pylint: disable=W0212
+        # fmt: on
+        freq_table = soup.find_all("table")[1]
+        assert len(freq_table.find_all("tr")) == v + 1  # +1 for header
+
+
+def test_series_profile_frequency_table_invalid():
+    """Invalid frequency table most_least tuples should raise ValueError."""
+    invalid_tuples = [(0, -1), (-1, 0), (-1, -1)]
+    with pytest.raises(ValueError):
+        for invalid in invalid_tuples:
+            ph.SeriesProfile(TEST_DF["CRASH TIME"], freq_most_least=invalid)

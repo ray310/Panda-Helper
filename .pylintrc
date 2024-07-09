@@ -38,4 +38,4 @@ check-quote-consistency=yes
 
 [DESIGN]
 max-args=5
-max-attributes=8
+max-attributes=10

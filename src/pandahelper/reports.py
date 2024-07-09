@@ -16,6 +16,32 @@ warn(
 )
 
 
+def frequency_table(series):
+    """Return value counts and relative frequency.
+
+    Args:
+        series (pd.Series): Series used to calculate value counts and relative
+            frequencies.
+
+    Returns:
+        pd.DataFrame: DataFrame containing values as the row index with value
+            counts and counts as a percentage of total count.
+
+    Raises:
+        TypeError: If input is not a pd.Series.
+    """
+    if not isinstance(series, pd.Series):
+        raise TypeError(f"{series}, is not pd.Series")
+    freq = series.value_counts()  # excludes nulls
+    freq.name = "Count"
+    counts = series.value_counts(normalize=True)
+    percent = pd.Series([f"{x:.2%}" for x in counts], index=counts.index)
+    percent.name = "% of Total"
+    output = pd.concat([freq, percent], axis=1)
+    output.index = [_abbreviate_string(str(x), limit=60) for x in output.index]
+    return output.sort_values(by="Count", ascending=False)
+
+
 def _abbreviate_df(df, first=20, last=5):
     """Return a shortened DataFrame or Series.
 
@@ -161,52 +187,6 @@ def _order_stats(stats: dict):
     return {k: stats[k] for k in key_list}
 
 
-def frequency_table(series):
-    """Return value counts and relative frequency.
-
-    Args:
-        series (pd.Series): Series used to calculate value counts and relative
-            frequencies.
-
-    Returns:
-        pd.DataFrame: DataFrame containing values as the row index with value
-            counts and counts as a percentage of total count.
-
-    Raises:
-        TypeError: If input is not a pd.Series.
-    """
-    if not isinstance(series, pd.Series):
-        raise TypeError(f"{series}, is not pd.Series")
-    freq = series.value_counts()  # excludes nulls
-    freq.name = "Count"
-    counts = series.value_counts(normalize=True)
-    percent = pd.Series([f"{x:.2%}" for x in counts], index=counts.index)
-    percent.name = "% of Total"
-    output = pd.concat([freq, percent], axis=1)
-    output.index = [_abbreviate_string(str(x), limit=60) for x in output.index]
-    return output
-
-
-def _format_html_table(table: str, align: str = "left", font: str = "monospace") -> str:
-    """Add additional formatting to HTML table prepared by tabulate."""
-    soup = bs4.BeautifulSoup(table, "html.parser")
-    for row in soup.find_all("tr"):
-        tags = row.find_all(["th", "td"])  # row in thead will have 'th'
-        for tag in tags:
-            tag["style"] = f"font-family: {font}, monospace; text-align: {align};"
-    return str(soup)
-
-
-def _decimal_align_col(table: str, col: int):
-    """Create decimal-aligned numbers in column of HTML table."""
-    soup = bs4.BeautifulSoup(table, "html.parser")
-    for row in soup.find_all("tr"):
-        tags = row.find_all("td")
-        if tags:
-            tags[col].string = tags[col].string.replace(" ", "\u2007")  # figure space
-    return str(soup)
-
-
 class DataFrameProfile:
     """DataFrame-level data profile.
 
@@ -306,37 +286,47 @@ class SeriesProfile:
         count (int): Count of non-null values.
         num_unique (int): Number of unique values.
         num_nulls (int): Number of null values.
-        frequency (pd.DataFrame): Table of value counts and relative frequency
-            as a DataFrame
+        frequency (pd.DataFrame): Frequency table with counts and percentage.
         stats (list): Distribution statistics for Series.
     """
 
-    def __init__(self, series: pd.Series, *, fmt: str = "simple"):
+    def __init__(
+        self,
+        series: pd.Series,
+        *,
+        fmt: str = "simple",
+        freq_most_least: tuple = (20, 5),
+    ):
         """Initialize SeriesProfile.
 
         Args:
             series (pd.Series): DataFrame to profile.
             fmt (str: optional): Printed table format. See
                 https://github.com/astanin/python-tabulate for options.
+            freq_most_least (tuple: optional): Tuple (x, y) of the x most common and
+            y least common values to display in frequency table.
 
         Raises:
             TypeError: If input is not a pd.Series.
         """
         if not isinstance(series, pd.Series):
             raise TypeError(f"{series}, is not pd.DataFrame")
+        if freq_most_least[0] < 0 or freq_most_least[1] < 0:
+            raise ValueError("Tuple values must be >= 0!")
         self.name = series.name
         self.dtype = series.dtype
         self.count = series.count()  # counts non-null values
         self.num_unique = series.nunique()
         self.num_nulls = series.size - self.count  # NAs, nans, NaT, but not ""
         self.frequency = frequency_table(series)
-        self._format = fmt
         self.stats = None
         if not (
             pat.is_object_dtype(self.dtype)
             or isinstance(self.dtype, pd.CategoricalDtype)
         ):
             self.stats = distribution_stats(series)
+        self._format = fmt
+        self._freq_table = freq_most_least
 
     def __create_tables(self, table_fmt: str):
         """Create SeriesProfile summary tables.
@@ -360,7 +350,9 @@ class SeriesProfile:
         series_table = tabulate(
             series_info, headers=[f"{sname} Info", ""], tablefmt=table_fmt
         )
-        freq_info = _abbreviate_df(self.frequency, first=20, last=5)
+        freq_info = _abbreviate_df(
+            self.frequency, first=self._freq_table[0], last=self._freq_table[1]
+        )
         freq_table = tabulate(
             freq_info, headers=["Value", "Count", "% of total"], tablefmt=table_fmt
         )
@@ -397,3 +389,23 @@ class SeriesProfile:
         """
         with open(path, "w+", encoding="utf-8") as fh:
             fh.write(str(self))
+
+
+def _format_html_table(table: str, align: str = "left", font: str = "monospace") -> str:
+    """Add additional formatting to HTML table prepared by tabulate."""
+    soup = bs4.BeautifulSoup(table, "html.parser")
+    for row in soup.find_all("tr"):
+        tags = row.find_all(["th", "td"])  # row in thead will have 'th'
+        for tag in tags:
+            tag["style"] = f"font-family: {font}, monospace; text-align: {align};"
+    return str(soup)
+
+
+def _decimal_align_col(table: str, col: int):
+    """Create decimal-aligned numbers in column of HTML table."""
+    soup = bs4.BeautifulSoup(table, "html.parser")
+    for row in soup.find_all("tr"):
+        tags = row.find_all("td")
+        if tags:
+            tags[col].string = tags[col].string.replace(" ", "\u2007")  # figure space
+    return str(soup)
