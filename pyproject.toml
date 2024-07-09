@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "panda-helper"
-version = "0.0.4"
+version = "0.1.0"
 dependencies = [
     "beautifulsoup4>=4.12.2",
     "numpy>=1.26.0",
@@ -21,7 +21,7 @@ description = "Data profiler for Pandas"
 keywords = ["data-profiling", "data-profiling-utility", "data-analysis"]
 license = {file = "LICENSE"}
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
