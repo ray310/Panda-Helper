@@ -9,5 +9,5 @@ from pandahelper.reports import (
 )
 
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 __all__ = ["DataFrameProfile", "SeriesProfile", "frequency_table"]
