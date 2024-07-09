@@ -3,6 +3,19 @@
 ## Unreleased
 ### Added
 - Improved project documentation
+
+____
+## 0.1.0 - Unreleased
+### Added
+- functionality to detect time series gaps
+- Split reports module
+
+____
+## 0.0.4 - Unreleased
+### Added
+- Add support for improved display in Jupyter Notebooks [gh-22](https://github.com/ray310/Panda-Helper/issues/22)
+- Add user to select different string formats for profiles [gh-24](https://github.com/ray310/Panda-Helper/issues/24)
+
 ____
 ## 0.0.3 - 2024-07-06
 ### Added
