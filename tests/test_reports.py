@@ -7,6 +7,7 @@ import numbers
 import re
 import tempfile
 import filecmp
+import bs4
 import numpy as np
 import pandas as pd
 import pytest
@@ -368,6 +369,19 @@ def test_dataframe_profile_invalid():
             ph.DataFrameProfile(invalid)
 
 
+def test_dataframe_profile_html():
+    """Test html representation of DataFrameProfile."""
+    profile = ph.DataFrameProfile(TEST_DF)
+    # fmt: off
+    soup = bs4.BeautifulSoup(profile._repr_html_(), "html.parser")  # pylint: disable=W0212
+    # fmt: on
+    tables = soup.find_all("table")
+    assert len(tables) == 3  # null_table
+    assert len(tables[2].find_all("tr")) == 16  # 15 dist stats + head row
+    first_td = tables[2].find("td")
+    assert first_td["style"] == "font-family: monospace, monospace; text-align: left;"
+
+
 def test_series_profile_text_valid_numerical_format():
     """Text version of SeriesProfile for numerical data matches test profile."""
     comparison_profile = "test_series_injured_profile.txt"
@@ -484,3 +498,17 @@ def test_series_profile_invalid():
     for invalid in invalid_types:
         with pytest.raises(TypeError):
             ph.SeriesProfile(invalid)
+
+
+def test_series_profile_html():
+    """Test html representation of SeriesProfile."""
+    profile = ph.SeriesProfile(TEST_NUM_SERIES)
+    # fmt: off
+    soup = bs4.BeautifulSoup(profile._repr_html_(), "html.parser")  # pylint: disable=W0212
+    # fmt: on
+    tables = soup.find_all("table")
+    assert len(tables) == 3  # null_table
+    assert len(tables[1].find_all("tr")) == 6  # freq table
+    assert len(tables[2].find_all("tr")) == 16  # 15 dist stats + head row
+    first_td = tables[2].find("td")
+    assert first_td["style"] == "font-family: monospace, monospace; text-align: left;"
