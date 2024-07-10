@@ -16,9 +16,9 @@ dependencies:
     - pandas=2.2.2
     - pip=24.0
     - pre-commit=3.4.0
-    - pydocstyle=6.3.0
     - pylint=3.2.2
     - pytest=7.4.4
+    - ruff
     - scipy=1.13.1
     - twine=4.0.2
     - pip:
