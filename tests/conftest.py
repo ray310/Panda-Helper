@@ -1,7 +1,7 @@
 """Shared pytest fixtures for Panda-helper tests.
 
-    Note that fixtures with a package-scope are run once and then available as
-    cached value.
+Note that fixtures with a package-scope are run once and then available as
+cached value.
 """
 
 import os

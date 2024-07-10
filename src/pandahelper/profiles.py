@@ -20,6 +20,7 @@ class DataFrameProfile:
         num_duplicates (int): Number of duplicated rows.
         nulls_per_row (pd.Series): Count of null values per row.
         null_stats (list): Distribution statistics on nulls per row.
+
     """
 
     def __init__(self, df: pd.DataFrame, *, name: str = "", fmt: str = "simple"):

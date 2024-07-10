@@ -39,3 +39,9 @@ Issues = "https://github.com/ray310/Panda-Helper/issues"
 
 [project.optional-dependencies]
 test = ["pytest>=7.4", "pylint>=3.0"]
+
+[tool.ruff.lint]
+select = ["D", "I"]  # pydocstyle, isort
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

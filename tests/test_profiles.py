@@ -1,4 +1,4 @@
-""" Tests for profile classes in profiles.py."""
+"""Tests for profile classes in profiles.py."""
 
 import filecmp
 import os
@@ -10,7 +10,6 @@ import numpy as np
 import pandas as pd
 import pytest
 import pandahelper.profiles as php
-
 
 TEST_DATA_DIR = "tests/test_data"  # needed
 TEST_DATA_FILE = "sample_collisions.csv"

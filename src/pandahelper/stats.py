@@ -2,8 +2,8 @@
 
 import numpy as np
 import pandas as pd
-import scipy.stats
 import pandas.api.types as pat
+import scipy.stats
 
 
 def frequency_table(series: pd.Series) -> pd.DataFrame:
@@ -50,7 +50,7 @@ def _abbreviate_string(s, limit=60):
     return s[:limit]
 
 
-def distribution_stats(series):
+def distribution_stats(series: pd.Series) -> pd.Series:
     """Return Series distribution statistics.
 
     Args:
