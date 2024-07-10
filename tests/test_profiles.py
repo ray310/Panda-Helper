@@ -12,14 +12,11 @@ import pytest
 import pandahelper.profiles as php
 
 
-TEST_DATA_DIR = "tests/test_data"
+TEST_DATA_DIR = "tests/test_data"  # needed
 TEST_DATA_FILE = "sample_collisions.csv"
-TEST_DF = pd.read_csv(os.path.join(TEST_DATA_DIR, TEST_DATA_FILE))
-TEST_CAT_SERIES = TEST_DF["BOROUGH"]
-TEST_NUM_SERIES = TEST_DF["NUMBER OF PERSONS INJURED"]
 
 
-def test_dataframe_profile_valid():
+def test_dataframe_profile_valid(test_df):
     """Generated DataFrame profile should match test profile."""
     compare_profile_name = "test_df_profile_name.txt"
     compare_profile_no_name = "test_df_profile_no_name.txt"
@@ -31,31 +28,21 @@ def test_dataframe_profile_valid():
     with tempfile.TemporaryDirectory() as tmp:
         for name, compare_file in zip(names, compare_files):
             test_file = os.path.join(tmp, "temp.txt")
-            php.DataFrameProfile(TEST_DF, name=name).save_report(test_file)
+            php.DataFrameProfile(test_df, name=name).save_report(test_file)
             assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
-def test_dataframe_profile_invalid():
+def test_dataframe_profile_invalid(non_series_invalid, num_series, cat_like_series):
     """DataFrame profile should not accept invalid data types."""
-    invalid_types = [
-        TEST_CAT_SERIES,
-        TEST_NUM_SERIES,
-        "data",
-        34,
-        34.5,
-        {"data": "dictionary"},
-        [["col_name", 1], ["col_name2", 2]],
-        (("col_name", 3), ("col_name2", 4)),
-        np.array([1, 2, 3]),
-    ]
+    invalid_types = [*non_series_invalid, num_series, cat_like_series]
     for invalid in invalid_types:
         with pytest.raises(TypeError):
             php.DataFrameProfile(invalid)
 
 
-def test_dataframe_profile_html():
+def test_dataframe_profile_html(test_df):
     """Test html representation of DataFrameProfile."""
-    profile = php.DataFrameProfile(TEST_DF)
+    profile = php.DataFrameProfile(test_df)
     # fmt: off
     soup = bs4.BeautifulSoup(profile._repr_html_(), "html.parser")  # pylint: disable=W0212
     # fmt: on
@@ -66,23 +53,23 @@ def test_dataframe_profile_html():
     assert first_td["style"] == "font-family: monospace, monospace; text-align: left;"
 
 
-def test_series_profile_text_valid_numerical_format():
+def test_series_profile_text_valid_numerical_format(num_series):
     """Text version of SeriesProfile for numerical data matches test profile."""
     comparison_profile = "test_series_injured_profile.txt"
     compare_file = os.path.join(TEST_DATA_DIR, comparison_profile)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
-        php.SeriesProfile(TEST_NUM_SERIES).save_report(test_file)
+        php.SeriesProfile(num_series).save_report(test_file)
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
-def test_series_profile_text_valid_object_format():
+def test_series_profile_text_valid_object_format(cat_like_series):
     """Text version of SeriesProfile for categorical data matches test profile."""
     comparison_profile = "test_series_borough_profile.txt"
     compare_file = os.path.join(TEST_DATA_DIR, comparison_profile)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
-        php.SeriesProfile(TEST_CAT_SERIES).save_report(test_file)
+        php.SeriesProfile(cat_like_series).save_report(test_file)
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
@@ -165,28 +152,21 @@ def test_series_profile_complex_format():
     assert re.findall("mean\\s+[(]4.5[+]4.5j[)]", repr(profile))
 
 
-def test_series_profile_invalid():
+def test_series_profile_invalid(non_series_invalid, test_df):
     """Series profile should not accept invalid data types."""
-    invalid_types = [
-        TEST_DF,
-        "data",
-        34,
-        34.5,
-        {"data": "dictionary"},
-        [["col_name", 1], ["col_name2", 2]],
-        (("col_name", 3), ("col_name2", 4)),
-        np.array([1, 2, 3]),
+    invalid_series = [
         pd.arrays.IntervalArray([pd.Interval(0, 1), pd.Interval(1, 5)]),
         pd.Index(range(10)),
     ]
+    invalid_types = [*non_series_invalid, test_df] + invalid_series
     for invalid in invalid_types:
         with pytest.raises(TypeError):
             php.SeriesProfile(invalid)
 
 
-def test_series_profile_html():
+def test_series_profile_html(num_series):
     """Test html representation of SeriesProfile."""
-    profile = php.SeriesProfile(TEST_NUM_SERIES)
+    profile = php.SeriesProfile(num_series)
     # fmt: off
     soup = bs4.BeautifulSoup(profile._repr_html_(), "html.parser")  # pylint: disable=W0212
     # fmt: on
@@ -198,7 +178,7 @@ def test_series_profile_html():
     assert first_td["style"] == "font-family: monospace, monospace; text-align: left;"
 
 
-def test_series_profile_frequency_table():
+def test_series_profile_frequency_table(test_df):
     """Valid values for frequency table should produce tables of desired length."""
     most_least_tuples = {
         (200, 200): 150,  # only 150 unique values
@@ -209,7 +189,7 @@ def test_series_profile_frequency_table():
         (0, 0): 0,
     }
     for k, v in most_least_tuples.items():
-        profile = php.SeriesProfile(TEST_DF["CRASH TIME"], freq_most_least=k)
+        profile = php.SeriesProfile(test_df["CRASH TIME"], freq_most_least=k)
         # fmt: off
         soup = bs4.BeautifulSoup(profile._repr_html_(), "html.parser")  # pylint: disable=W0212
         # fmt: on
@@ -217,49 +197,40 @@ def test_series_profile_frequency_table():
         assert len(freq_table.find_all("tr")) == v + 1  # +1 for header
 
 
-def test_series_profile_frequency_table_invalid():
+def test_series_profile_frequency_table_invalid(test_df):
     """Invalid frequency table most_least tuples should raise ValueError."""
     invalid_tuples = [(0, -1), (-1, 0), (-1, -1)]
     with pytest.raises(ValueError):
         for invalid in invalid_tuples:
-            php.SeriesProfile(TEST_DF["CRASH TIME"], freq_most_least=invalid)
+            php.SeriesProfile(test_df["CRASH TIME"], freq_most_least=invalid)
 
 
-def test_abbreviate_df_invalid_input():
+def test_abbreviate_df_invalid_input(non_series_invalid):
     """Invalid data type inputs should raise Type Error."""
-    invalid_types = [
-        "data",
-        34,
-        34.5,
-        {"data": "dictionary"},
-        [["col_name", 1], ["col_name2", 2]],
-        (("col_name", 3), ("col_name2", 4)),
-        np.array([1, 2, 3]),
-    ]
-    for invalid in invalid_types:
+    for invalid in non_series_invalid:
         with pytest.raises(TypeError):
             php._abbreviate_df(invalid)  # pylint: disable=W0212
 
 
-def test_abbreviate_df_valid_output():
+def test_abbreviate_df_valid_output(test_df):
     """Valid input should lead to valid and consistent output."""
-    output = php._abbreviate_df(TEST_DF, 5, 5)  # pylint: disable=W0212
+    output = php._abbreviate_df(test_df, 5, 5)  # pylint: disable=W0212
     assert isinstance(output, (pd.DataFrame, pd.Series))
     assert output.iloc[1]["LOCATION"] == "(40.7504, -73.985214)"
     assert output.iloc[8]["COLLISION_ID"] == 3676178
 
 
-def test_abbreviate_df_most_plus_least_greater_sum():
+def test_abbreviate_df_most_plus_least_greater_sum(test_df):
     """Returns itself if (first + last) parameters exceed object length."""
     first = 300
     last = 300
-    assert len(TEST_DF) < first + last
-    assert TEST_DF.equals(
-        php._abbreviate_df(TEST_DF, first, last)  # pylint: disable=W0212
+    assert len(test_df) < first + last
+    assert test_df.equals(
+        php._abbreviate_df(test_df, first, last)  # pylint: disable=W0212
     )
 
 
-def test_abbreviate_df_negative_params():
+def test_abbreviate_df_negative_params(test_df):
     """Negative parameters raise Value Error."""
     invalid_params = [
         {"first": -5, "last": 5},
@@ -268,4 +239,4 @@ def test_abbreviate_df_negative_params():
     ]
     for invalid in invalid_params:
         with pytest.raises(ValueError):
-            php._abbreviate_df(TEST_DF, **invalid)  # pylint: disable=W0212
+            php._abbreviate_df(test_df, **invalid)  # pylint: disable=W0212
