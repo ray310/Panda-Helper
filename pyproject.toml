@@ -40,8 +40,11 @@ Issues = "https://github.com/ray310/Panda-Helper/issues"
 [project.optional-dependencies]
 test = ["pytest>=7.4", "pylint>=3.0"]
 
+[tool.ruff]
+extend-include = ["*.ipynb"]
+
 [tool.ruff.lint]
-select = ["D", "I"]  # pydocstyle, isort
+select = ["D", "F", "B"]  # pydocstyle, pyflakes, flake8-bugbear, isort
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

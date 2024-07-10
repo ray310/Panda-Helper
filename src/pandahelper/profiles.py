@@ -42,7 +42,7 @@ class DataFrameProfile:
         self.dtypes = list(zip(df.dtypes.index, df.dtypes.values))
         self.num_duplicates = sum(df.duplicated(keep="first"))
         self.nulls_per_row = df.isna().sum(axis=1)
-        self.null_stats = phs.distribution_stats(self.nulls_per_row)
+        self.null_stats = phs.dist_stats_dict(self.nulls_per_row)
         self._format = fmt
 
     def __create_tables(self, table_fmt: str):
@@ -145,7 +145,7 @@ class SeriesProfile:
             pat.is_object_dtype(self.dtype)
             or isinstance(self.dtype, pd.CategoricalDtype)
         ):
-            self.stats = phs.distribution_stats(series)
+            self.stats = phs.dist_stats_dict(series)
         self._format = fmt
         self._freq_table = freq_most_least
 

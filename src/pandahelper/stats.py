@@ -50,17 +50,51 @@ def _abbreviate_string(s, limit=60):
     return s[:limit]
 
 
-def distribution_stats(series: pd.Series) -> pd.Series:
-    """Return Series distribution statistics.
+def distribution_stats(series: pd.Series) -> pd.DataFrame:
+    """Return single-column pd.DataFrame of distribution statistics for pd.Series.
 
     Args:
         series (pd.Series): Series used to calculate distribution statistics.
+        Distribution statistics will depend on series dtype. Supported dtypes are:
+            - int64
+            - float64
+            - bool
+            - complex128
+            - datetime64
+            - timedelta64
+            - period[<unit>]
+            - interval
+
+    Returns:
+        pd.DataFrame: Single-column of calculated values with statistics as index.
+
+    Raises:
+        TypeError: If input is not a numeric-like pd.Series.
+    """
+    stats = dist_stats_dict(series)
+    return pd.DataFrame.from_dict(stats, orient="index", columns=["Statistic Value"])
+
+
+def dist_stats_dict(series: pd.Series) -> dict:
+    """Return dictionary of distribution statistics for pd.Series.
+
+    Args:
+        series (pd.Series): Series used to calculate distribution statistics.
+        Distribution statistics will depend on series dtype. Supported dtypes are:
+            - int64
+            - float64
+            - bool
+            - complex128
+            - datetime64
+            - timedelta64
+            - period[<unit>]
+            - interval
 
     Returns:
         dict: Key-value pairs with name of statistic and calculated value.
 
     Raises:
-        TypeError: If input is not a numeric pd.Series.
+        TypeError: If input is not a numeric-like pd.Series.
     """
     if not isinstance(series, pd.Series):
         raise TypeError(f"{series}, is not pd.Series")
@@ -71,7 +105,7 @@ def distribution_stats(series: pd.Series) -> pd.Series:
         or isinstance(series.dtype, (pd.PeriodDtype, pd.IntervalDtype))
     ):
         raise TypeError(
-            f"distribution_stats is not supported for pd.Series of type: {series.dtype}"
+            f"Distribution Stats not supported for pd.Series of type: {series.dtype}"
         )
     stats = {
         "count": series.count(),
