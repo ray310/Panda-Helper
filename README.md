@@ -187,7 +187,7 @@ df_profile
     skew                        0.512241
 
 ```python
-df_profile.save_report("df_profile.txt")
+df_profile.save("df_profile.txt")
 ```
 
 __Profiling a Series__<br>
@@ -228,7 +228,7 @@ series_profile
     skew                          1.99931
 
 ```python
-series_profile.save_report("amount_profile.txt")
+series_profile.save("amount_profile.txt")
 ```
 ____
 ### Sample data obtained from:

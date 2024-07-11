@@ -1,4 +1,4 @@
-"""Panda-Helper Profile classes."""
+"""Panda-Helper data profiles."""
 
 import bs4
 import pandas as pd
@@ -8,9 +8,9 @@ import pandahelper.stats as phs
 
 
 class DataFrameProfile:
-    """DataFrame-level data profile.
+    """Pandas DataFrame data profile.
 
-    Prepares pretty-printed DataFrame-level data profile that can be displayed
+    Prepare data profile of Pandas DataFrame that can be displayed
     or saved.
 
     Attributes:
@@ -20,7 +20,6 @@ class DataFrameProfile:
         num_duplicates (int): Number of duplicated rows.
         nulls_per_row (pd.Series): Count of null values per row.
         null_stats (list): Distribution statistics on nulls per row.
-
     """
 
     def __init__(self, df: pd.DataFrame, *, name: str = "", fmt: str = "simple"):
@@ -28,12 +27,12 @@ class DataFrameProfile:
 
         Args:
             df (pd.DataFrame): DataFrame to profile.
-            name (str, optional): Name to assign to profile.
+            name (str: optional): Name to assign to profile.
             fmt (str: optional): Printed table format. See
                 https://github.com/astanin/python-tabulate for options.
 
         Raises:
-            TypeError: If input is not a pd.DataFrame.
+            TypeError: If input is not a Pandas DataFrame.
         """
         if not isinstance(df, pd.DataFrame):
             raise TypeError(f"{df}, is not pd.DataFrame")
@@ -85,7 +84,7 @@ class DataFrameProfile:
         tables[2] = _decimal_align_col(tables[2], 1)
         return tables[0] + "<br>" + tables[1] + "<br>" + tables[2]
 
-    def save_report(self, path):
+    def save(self, path: str):
         """Save profile to provided path.
 
         Args:
@@ -96,14 +95,14 @@ class DataFrameProfile:
 
 
 class SeriesProfile:
-    """Series-level data profile.
+    """Pandas Series data profile.
 
-    Prepares pretty-printed Series-level data profile that can be displayed
+    Prepare data profile of Pandas Series that can be displayed
     or saved.
 
     Attributes:
         name (str): Name of Series.
-        dtype (np.dtype): Data types of Series within DataFrame.
+        dtype (numpy.dtype or Pandas dtype): Data types of Series within DataFrame.
         count (int): Count of non-null values.
         num_unique (int): Number of unique values.
         num_nulls (int): Number of null values.
@@ -125,7 +124,7 @@ class SeriesProfile:
             fmt (str: optional): Printed table format. See
                 https://github.com/astanin/python-tabulate for options.
             freq_most_least (tuple: optional): Tuple (x, y) of the x most common and
-            y least common values to display in frequency table.
+                y least common values to display in frequency table.
 
         Raises:
             TypeError: If input is not a pd.Series.
@@ -202,7 +201,7 @@ class SeriesProfile:
         tables[2] = _decimal_align_col(tables[2], 1)
         return tables[0] + "<br>" + tables[1] + "<br>" + tables[2]
 
-    def save_report(self, path):
+    def save(self, path):
         """Save profile to provided path.
 
         Args:

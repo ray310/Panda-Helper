@@ -27,7 +27,7 @@ def test_dataframe_profile_valid(test_df):
     with tempfile.TemporaryDirectory() as tmp:
         for name, compare_file in zip(names, compare_files):
             test_file = os.path.join(tmp, "temp.txt")
-            php.DataFrameProfile(test_df, name=name).save_report(test_file)
+            php.DataFrameProfile(test_df, name=name).save(test_file)
             assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
@@ -58,7 +58,7 @@ def test_series_profile_text_valid_numerical_format(num_series):
     compare_file = os.path.join(TEST_DATA_DIR, comparison_profile)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
-        php.SeriesProfile(num_series).save_report(test_file)
+        php.SeriesProfile(num_series).save(test_file)
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
@@ -68,7 +68,7 @@ def test_series_profile_text_valid_object_format(cat_like_series):
     compare_file = os.path.join(TEST_DATA_DIR, comparison_profile)
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
-        php.SeriesProfile(cat_like_series).save_report(test_file)
+        php.SeriesProfile(cat_like_series).save(test_file)
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 

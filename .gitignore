@@ -11,9 +11,10 @@
 .coverage
 .idea
 data
-dev
+notes
 dist
 htmlcov
+site
 __pycache__
 
 # files

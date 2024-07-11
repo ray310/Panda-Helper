@@ -10,15 +10,14 @@ def frequency_table(series: pd.Series) -> pd.DataFrame:
     """Return value counts and relative frequency.
 
     Args:
-        series (pd.Series): Series used to calculate value counts and relative
+        series (pd.Series): Pandas Series used to calculate value counts and relative
             frequencies.
 
     Returns:
-        pd.DataFrame: DataFrame containing values as the row index with value
-            counts and counts as a percentage of total count.
+        Pandas DataFrame of value counts and percentages indexed by value.
 
     Raises:
-        TypeError: If input is not a pd.Series.
+        TypeError: If input is not a Pandas Series.
     """
     if not isinstance(series, pd.Series):
         raise TypeError(f"{series}, is not pd.Series")
@@ -51,11 +50,12 @@ def _abbreviate_string(s, limit=60):
 
 
 def distribution_stats(series: pd.Series) -> pd.DataFrame:
-    """Return single-column pd.DataFrame of distribution statistics for pd.Series.
+    """Return single-column Pandas DataFrame of distribution statistics.
 
     Args:
-        series (pd.Series): Series used to calculate distribution statistics.
-        Distribution statistics will depend on series dtype. Supported dtypes are:
+        series (pd.Series): Pandas Series used to calculate distribution statistics.
+            Distribution statistics will depend on series dtype. Supported dtypes are:
+
             - int64
             - float64
             - bool
@@ -80,7 +80,8 @@ def dist_stats_dict(series: pd.Series) -> dict:
 
     Args:
         series (pd.Series): Series used to calculate distribution statistics.
-        Distribution statistics will depend on series dtype. Supported dtypes are:
+            Distribution statistics will depend on series dtype. Supported dtypes are:
+
             - int64
             - float64
             - bool
@@ -89,6 +90,9 @@ def dist_stats_dict(series: pd.Series) -> dict:
             - timedelta64
             - period[<unit>]
             - interval
+
+    Warning:
+        This function is subject to change without warning.
 
     Returns:
         dict: Key-value pairs with name of statistic and calculated value.
