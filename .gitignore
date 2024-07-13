@@ -1,11 +1,11 @@
 # file types
 *.docx
 *.env
-*.ipynb
 *.pages
 
 # patterns
 *.egg-info*
+*ipynb*
 
 # folders
 .coverage

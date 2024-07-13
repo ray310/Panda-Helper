@@ -16,7 +16,8 @@ class DataFrameProfile:
     Attributes:
         name (str): Name of DataFrame profile if provided. Default value is "".
         shape (tuple): Dataframe shape.
-        dtypes (pd.Series): Data types of Series within DataFrame.
+        dtypes (pd.Series): Data types of DataFrame index and Series in DataFrame.
+        memory_usage (pd.Series): Memory usage (MB) of index and Series in DataFrame.
         num_duplicates (int): Number of duplicated rows.
         nulls_per_row (pd.Series): Count of null values per row.
         null_stats (list): Distribution statistics on nulls per row.
@@ -38,7 +39,8 @@ class DataFrameProfile:
             raise TypeError(f"{df}, is not pd.DataFrame")
         self.name = name
         self.shape = df.shape
-        self.dtypes = list(zip(df.dtypes.index, df.dtypes.values))
+        self.dtypes = pd.concat([pd.Series(df.index.dtype, index=["Index"]), df.dtypes])
+        self.memory_usage = df.memory_usage(index=True, deep=True) / 1000000  # MB
         self.num_duplicates = sum(df.duplicated(keep="first"))
         self.nulls_per_row = df.isna().sum(axis=1)
         self.null_stats = phs.dist_stats_dict(self.nulls_per_row)
@@ -57,21 +59,33 @@ class DataFrameProfile:
         df_info = [
             ("DF Shape", self.shape),
             ("Duplicated Rows", self.num_duplicates),
+            ("Memory Usage (MB)", f"{self.memory_usage.sum():,.3f}"),
         ]
         if self.name:
             df_info.insert(0, ("DF Name", self.name))
         df_table = tabulate(
             df_info, headers=["DataFrame-Level Info", ""], tablefmt=table_fmt
         )
-        dtype_table = tabulate(
-            self.dtypes, headers=["Series Name", "Data Type"], tablefmt=table_fmt
+        type_usage = pd.concat(
+            [self.dtypes, self.memory_usage], keys=["dtype", "memory"], axis=1
+        )  # match on index
+        dtype_usage_table = tabulate(
+            list(
+                zip(
+                    type_usage.index,
+                    type_usage["dtype"].values,
+                    type_usage["memory"].values,
+                )
+            ),
+            headers=["Series Name", "Data Type", "Memory Usage (MB)"],
+            tablefmt=table_fmt,
         )
         null_table = tabulate(
             list(self.null_stats.items()),
             headers=["Summary of Nulls Per Row", ""],
             tablefmt=table_fmt,
         )
-        return [df_table, dtype_table, null_table]
+        return [df_table, dtype_usage_table, null_table]
 
     def __repr__(self):
         """Printable version of profile."""
@@ -81,7 +95,8 @@ class DataFrameProfile:
     def _repr_html_(self):
         """HTML representation of profile."""
         tables = [_format_html_table(t) for t in self.__create_tables("html")]
-        tables[2] = _decimal_align_col(tables[2], 1)
+        tables[1] = _decimal_align_col(tables[1], 2)  # type/memory usage table
+        tables[2] = _decimal_align_col(tables[2], 1)  # stats table
         return tables[0] + "<br>" + tables[1] + "<br>" + tables[2]
 
     def save(self, path: str):
