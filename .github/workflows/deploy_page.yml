@@ -2,7 +2,7 @@ name: Deploy Project Site
 on:
   push:
     branches:
-      - 010
+      - main
 permissions:
   contents: write
 jobs:

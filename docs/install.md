@@ -2,6 +2,7 @@
 hide:
   - navigation
   - toc
+description: How to install Panda-Helper. Install pandahelper with pip or anaconda and get up and running in minutes.
 ---
 
 # Installing Panda-Helper
