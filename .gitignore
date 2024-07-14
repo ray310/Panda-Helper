@@ -1,19 +1,21 @@
 # file types
 *.docx
 *.env
-*.ipynb
 *.pages
 
 # patterns
 *.egg-info*
+*ipynb*
+conda_environment_dev_*
 
 # folders
 .coverage
 .idea
 data
-dev
+notes
 dist
 htmlcov
+site
 __pycache__
 
 # files

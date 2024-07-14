@@ -1,14 +1,22 @@
 # Changelog
 
 ## Unreleased
+
+## 0.1.1 - Unreleased
 ### Added
 - functionality to detect time series gaps
 
 ____
-## 0.1.0 - Unreleased
+## 0.1.0 - 2024-07-14
 ### Added
-- Split reports module
-- Improved project documentation
+- Add memory usage to `DataFrameProfile` [gh-30](https://github.com/ray310/Panda-Helper/issues/30)
+- Improve formatting of `distribution_stats` function output [gh-29](https://github.com/ray310/Panda-Helper/issues/29)
+- Improved project documentation with project website [gh-2](https://github.com/ray310/Panda-Helper/issues/2)
+
+### Changed
+- [Split reports module into `profiles` and `stats`](https://github.com/ray310/Panda-Helper/commit/93320860834e757ab18d86c2b9334efb05738662)
+- [Renamed `save_report` method to `save`](https://github.com/ray310/Panda-Helper/commit/876c5f5af8906081f96aff1f1f0ba9d5754a719a)
+- [Refactored tests to use pytest fixtures](https://github.com/ray310/Panda-Helper/commit/ff2bf2dd6e73dd4747b62faef4bd350949866a91)
 
 ____
 ## 0.0.4 - 2024-07-09

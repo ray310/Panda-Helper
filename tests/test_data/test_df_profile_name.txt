@@ -3,39 +3,41 @@ DataFrame-Level Info
 DF Name                 test_name
 DF Shape                (200, 30)
 Duplicated Rows         0
+Memory Usage (MB)       0.186
 
-Series Name                    Data Type
------------------------------  -----------
-CRASH DATE                     object
-CRASH TIME                     object
-BOROUGH                        object
-ZIP CODE                       float64
-LATITUDE                       float64
-LONGITUDE                      float64
-LOCATION                       object
-ON STREET NAME                 object
-CROSS STREET NAME              object
-OFF STREET NAME                object
-NUMBER OF PERSONS INJURED      int64
-NUMBER OF PERSONS KILLED       int64
-NUMBER OF PEDESTRIANS INJURED  int64
-NUMBER OF PEDESTRIANS KILLED   int64
-NUMBER OF CYCLIST INJURED      int64
-NUMBER OF CYCLIST KILLED       int64
-NUMBER OF MOTORIST INJURED     int64
-NUMBER OF MOTORIST KILLED      int64
-CONTRIBUTING FACTOR VEHICLE 1  object
-CONTRIBUTING FACTOR VEHICLE 2  object
-CONTRIBUTING FACTOR VEHICLE 3  object
-CONTRIBUTING FACTOR VEHICLE 4  object
-CONTRIBUTING FACTOR VEHICLE 5  object
-COLLISION_ID                   int64
-VEHICLE TYPE CODE 1            object
-VEHICLE TYPE CODE 2            object
-VEHICLE TYPE CODE 3            object
-VEHICLE TYPE CODE 4            object
-VEHICLE TYPE CODE 5            object
-FLAG                           bool
+Series Name                    Data Type      Memory Usage (MB)
+-----------------------------  -----------  -------------------
+Index                          int64                   0.000132
+CRASH DATE                     object                  0.011185
+CRASH TIME                     object                  0.01075
+BOROUGH                        object                  0.009503
+ZIP CODE                       float64                 0.0016
+LATITUDE                       float64                 0.0016
+LONGITUDE                      float64                 0.0016
+LOCATION                       object                  0.013331
+ON STREET NAME                 object                  0.013848
+CROSS STREET NAME              object                  0.009242
+OFF STREET NAME                object                  0.009136
+NUMBER OF PERSONS INJURED      int64                   0.0016
+NUMBER OF PERSONS KILLED       int64                   0.0016
+NUMBER OF PEDESTRIANS INJURED  int64                   0.0016
+NUMBER OF PEDESTRIANS KILLED   int64                   0.0016
+NUMBER OF CYCLIST INJURED      int64                   0.0016
+NUMBER OF CYCLIST KILLED       int64                   0.0016
+NUMBER OF MOTORIST INJURED     int64                   0.0016
+NUMBER OF MOTORIST KILLED      int64                   0.0016
+CONTRIBUTING FACTOR VEHICLE 1  object                  0.014043
+CONTRIBUTING FACTOR VEHICLE 2  object                  0.011399
+CONTRIBUTING FACTOR VEHICLE 3  object                  0.006876
+CONTRIBUTING FACTOR VEHICLE 4  object                  0.006596
+CONTRIBUTING FACTOR VEHICLE 5  object                  0.006428
+COLLISION_ID                   int64                   0.0016
+VEHICLE TYPE CODE 1            object                  0.012714
+VEHICLE TYPE CODE 2            object                  0.011046
+VEHICLE TYPE CODE 3            object                  0.007014
+VEHICLE TYPE CODE 4            object                  0.006674
+VEHICLE TYPE CODE 5            object                  0.006452
+FLAG                           bool                    0.0002
 
 Summary of Nulls Per Row
 --------------------------  ---------
