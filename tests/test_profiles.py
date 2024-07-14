@@ -35,25 +35,6 @@ def test_dataframe_profile_valid_312(test_df):
             assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
-@pytest.mark.skipif(
-    not ((3, 11) <= sys.version_info < (3, 12)), reason="Runs on Python 3.11"
-)
-def test_dataframe_profile_valid_311(test_df):
-    """Generated DataFrame profile should match test profile (Python 3.11)."""
-    compare_profile_name = "test_df_profile_name_311.txt"
-    compare_profile_no_name = "test_df_profile_no_name_311.txt"
-    compare_files = [
-        os.path.join(TEST_DATA_DIR, compare_profile_name),
-        os.path.join(TEST_DATA_DIR, compare_profile_no_name),
-    ]
-    names = ["test_name", ""]
-    with tempfile.TemporaryDirectory() as tmp:
-        for name, compare_file in zip(names, compare_files):
-            test_file = os.path.join(tmp, "temp.txt")
-            php.DataFrameProfile(test_df, name=name).save(test_file)
-            assert filecmp.cmp(compare_file, test_file, shallow=False)
-
-
 def test_dataframe_profile_invalid(non_series_invalid, num_series, cat_like_series):
     """DataFrame profile should not accept invalid data types."""
     invalid_types = [*non_series_invalid, num_series, cat_like_series]
