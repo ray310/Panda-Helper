@@ -43,8 +43,15 @@ class DataFrameProfile:
         self.memory_usage = df.memory_usage(index=True, deep=True) / 1000000  # MB
         self.num_duplicates = sum(df.duplicated(keep="first"))
         self.nulls_per_row = df.isna().sum(axis=1)
-        self.null_stats = phs.dist_stats_dict(self.nulls_per_row)
+        self.null_stats = self.__null_stats()
         self._format = fmt
+
+    def __null_stats(self, delete_key="count"):
+        """Prepare distribution statistics for the number of nulls per row."""
+        stats = phs.dist_stats_dict(self.nulls_per_row)
+        new_stats = {"Number of Columns": self.shape[1]}
+        del stats[delete_key]
+        return new_stats | stats
 
     def __create_tables(self, table_fmt: str):
         """Create DataFrameProfile summary tables.
