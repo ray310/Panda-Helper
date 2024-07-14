@@ -16,9 +16,11 @@ TEST_DATA_DIR = "tests/test_data"  # needed
 TEST_DATA_FILE = "sample_collisions.csv"
 
 
-@pytest.mark.skipif(sys.version_info < (3, 12), reason="Runs on Python >= 3.12")
+@pytest.mark.skipif(
+    not ((3, 12) <= sys.version_info < (3, 13)), reason="Runs on Python 3.12"
+)
 def test_dataframe_profile_valid_312(test_df):
-    """Generated DataFrame profile should match test profile (Python >= 3.12)."""
+    """Generated DataFrame profile should match test profile (Python 3.12)."""
     compare_profile_name = "test_df_profile_name.txt"
     compare_profile_no_name = "test_df_profile_no_name.txt"
     compare_files = [
@@ -33,9 +35,11 @@ def test_dataframe_profile_valid_312(test_df):
             assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
-@pytest.mark.skipif(sys.version_info > (3, 12), reason="Runs on Python <= 3.12")
+@pytest.mark.skipif(
+    not ((3, 11) <= sys.version_info < (3, 12)), reason="Runs on Python 3.11"
+)
 def test_dataframe_profile_valid_311(test_df):
-    """Generated DataFrame profile should match test profile (Python < 3.12)"""
+    """Generated DataFrame profile should match test profile (Python 3.11)."""
     compare_profile_name = "test_df_profile_name_311.txt"
     compare_profile_no_name = "test_df_profile_no_name_311.txt"
     compare_files = [

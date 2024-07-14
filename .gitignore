@@ -6,6 +6,7 @@
 # patterns
 *.egg-info*
 *ipynb*
+conda_environment_dev_*
 
 # folders
 .coverage
@@ -19,4 +20,3 @@ __pycache__
 
 # files
 .DS_Store
-conda_environment_dev_311.yaml
