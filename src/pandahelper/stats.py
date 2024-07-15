@@ -31,7 +31,7 @@ def frequency_table(series: pd.Series) -> pd.DataFrame:
     return output.sort_values(by="Count", ascending=False)
 
 
-def _abbreviate_string(s, limit=60):
+def _abbreviate_string(s, limit=60) -> str:
     """Return first x characters of a string.
 
     Args:
@@ -157,7 +157,7 @@ def _add_quantiles(series: pd.Series, d: dict):
     d["99%"] = series.quantile(0.99)
 
 
-def _order_stats(stats: dict):
+def _order_stats(stats: dict) -> dict:
     """Sort stats dictionary by order provided in all_stats.
 
     Helper function used in distribution_stats.

@@ -137,7 +137,7 @@ class SeriesProfile:
         series: pd.Series,
         *,
         fmt: str = "simple",
-        freq_most_least: tuple = (20, 5),
+        freq_most_least: tuple = (10, 5),
     ):
         """Initialize SeriesProfile.
 
@@ -233,26 +233,6 @@ class SeriesProfile:
             fh.write(str(self))
 
 
-def _format_html_table(table: str, align: str = "left", font: str = "monospace") -> str:
-    """Add additional formatting to HTML table prepared by tabulate."""
-    soup = bs4.BeautifulSoup(table, "html.parser")
-    for row in soup.find_all("tr"):
-        tags = row.find_all(["th", "td"])  # row in thead will have 'th'
-        for tag in tags:
-            tag["style"] = f"font-family: {font}, monospace; text-align: {align};"
-    return str(soup)
-
-
-def _decimal_align_col(table: str, col: int):
-    """Create decimal-aligned numbers in column of HTML table."""
-    soup = bs4.BeautifulSoup(table, "html.parser")
-    for row in soup.find_all("tr"):
-        tags = row.find_all("td")
-        if tags:
-            tags[col].string = tags[col].string.replace(" ", "\u2007")  # figure space
-    return str(soup)
-
-
 def _abbreviate_df(df, first=20, last=5):
     """Return a shortened DataFrame or Series.
 
@@ -282,3 +262,23 @@ def _abbreviate_df(df, first=20, last=5):
     else:
         abbrev = pd.concat([df.iloc[:first], df.iloc[(len(df) - last) : len(df)]])
     return abbrev
+
+
+def _format_html_table(table: str, align: str = "left", font: str = "monospace") -> str:
+    """Add additional formatting to HTML table prepared by tabulate."""
+    soup = bs4.BeautifulSoup(table, "html.parser")
+    for row in soup.find_all("tr"):
+        tags = row.find_all(["th", "td"])  # row in thead will have 'th'
+        for tag in tags:
+            tag["style"] = f"font-family: {font}, monospace; text-align: {align};"
+    return str(soup)
+
+
+def _decimal_align_col(table: str, col: int):
+    """Create decimal-aligned numbers in column of HTML table."""
+    soup = bs4.BeautifulSoup(table, "html.parser")
+    for row in soup.find_all("tr"):
+        tags = row.find_all("td")
+        if tags:
+            tags[col].string = tags[col].string.replace(" ", "\u2007")  # figure space
+    return str(soup)
