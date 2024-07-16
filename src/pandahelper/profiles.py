@@ -5,6 +5,7 @@ import pandas as pd
 import pandas.api.types as pat
 from tabulate import tabulate
 import pandahelper.stats as phs
+import pandahelper.times as pht
 
 
 class DataFrameProfile:
@@ -61,7 +62,6 @@ class DataFrameProfile:
 
         Returns:
             list(str): List of Tabulate tables.
-
         """
         df_info = [
             ("DF Shape", self.shape),
@@ -129,7 +129,10 @@ class SeriesProfile:
         num_unique (int): Number of unique values.
         num_nulls (int): Number of null values.
         frequency (pd.DataFrame): Frequency table with counts and percentage.
-        stats (list): Distribution statistics for Series.
+        stats (dict): Distribution statistics for Series.
+        time_diffs (pd.Series): Time diffs (gaps) if series is of type `datetime64`.
+            Alternately, can be time diffs in a Series with a DateTimeIndex if the
+            `time_index` parameter was set to `True` when creating Series Profile.
     """
 
     def __init__(
@@ -138,48 +141,57 @@ class SeriesProfile:
         *,
         fmt: str = "simple",
         freq_most_least: tuple = (10, 5),
+        time_index: bool = False,
     ):
         """Initialize SeriesProfile.
 
         Args:
-            series (pd.Series): DataFrame to profile.
-            fmt (str: optional): Printed table format. See
-                https://github.com/astanin/python-tabulate for options.
+            series (pd.Series): Pandas Series to profile.
+            fmt (str: optional): Printed table format. See:
+                <https://github.com/astanin/python-tabulate> for options.
             freq_most_least (tuple: optional): Tuple (x, y) of the x most common and
                 y least common values to display in frequency table.
+            time_index (bool: optional): Whether to use the index for calculating time
+                diffs for a `datetime64`-related Pandas Series. Not relevant for
+                non-time related Series.
 
         Raises:
-            TypeError: If input is not a pd.Series.
+            TypeError: If input is not a Pandas Series.
         """
         if not isinstance(series, pd.Series):
             raise TypeError(f"{series}, is not pd.DataFrame")
         if freq_most_least[0] < 0 or freq_most_least[1] < 0:
             raise ValueError("Tuple values must be >= 0!")
+        self._format = fmt
+        self._freq_table = freq_most_least
         self.name = series.name
         self.dtype = series.dtype
         self.count = series.count()  # counts non-null values
         self.num_unique = series.nunique()
         self.num_nulls = series.size - self.count  # NAs, nans, NaT, but not ""
         self.frequency = phs.frequency_table(series)
-        self.stats = None
-        if not (
-            pat.is_object_dtype(self.dtype)
-            or isinstance(self.dtype, pd.CategoricalDtype)
+        self.stats = self.__calc_stats(series)
+        self.time_diffs = self.__calc_time_diffs(series, time_index)
+
+    def __calc_stats(self, series):
+        """Calculate distribution stats if allowed dtype, else return None."""
+        if pat.is_object_dtype(self.dtype) or isinstance(
+            self.dtype, pd.CategoricalDtype
         ):
-            self.stats = phs.dist_stats_dict(series)
-        self._format = fmt
-        self._freq_table = freq_most_least
+            return None
+        return phs.dist_stats_dict(series)
 
-    def __create_tables(self, table_fmt: str):
-        """Create SeriesProfile summary tables.
+    @staticmethod
+    def __calc_time_diffs(series, use_time_index: bool) -> pd.Series or None:
+        """Calculate time diffs for time-indexed series or datetime64 series."""
+        if use_time_index and pat.is_datetime64_any_dtype(series.index):
+            return pht.time_diffs_index(series)
+        if (not use_time_index) and pat.is_datetime64_any_dtype(series):
+            return pht.time_diffs(series)
+        return None
 
-        Args:
-            table_fmt (str): Tabulate table format name.
-
-        Returns:
-            list(str): List of Tabulate tables.
-
-        """
+    def __create_tables(self, table_fmt: str) -> list[str]:
+        """Create and return SeriesProfile summary tables."""
         series_info = [
             ("Data Type", self.dtype),
             ("Count", self.count),
@@ -201,16 +213,22 @@ class SeriesProfile:
         stats_table = ""
         if self.stats is not None:
             stats = self.stats
-            if pat.is_complex_dtype(
-                self.dtype
-            ):  # tabulate converts complex numbers to real numbers
+            # tabulate casts complex numbers to real numbers, dropping imaginary part
+            if pat.is_complex_dtype(self.dtype):
                 stats = {k: str(v) for k, v in self.stats.items()}
             stats_table = tabulate(
                 list(stats.items()),
                 headers=["Statistic", "Value"],
                 tablefmt=table_fmt,
             )
-        return [series_table, freq_table, stats_table]
+        time_diffs_table = ""
+        if self.time_diffs is not None:
+            time_diffs_table = tabulate(
+                phs.frequency_table(self.time_diffs),
+                headers=["Time Gaps (Diffs)", "Count", "% of total"],
+                tablefmt=table_fmt,
+            )
+        return [series_table, freq_table, stats_table, time_diffs_table]
 
     def __repr__(self):
         """Printable version of profile."""
@@ -221,7 +239,7 @@ class SeriesProfile:
         """HTML representation of profile."""
         tables = [_format_html_table(t) for t in self.__create_tables("html")]
         tables[2] = _decimal_align_col(tables[2], 1)
-        return tables[0] + "<br>" + tables[1] + "<br>" + tables[2]
+        return tables[0] + "<br>" + tables[1] + "<br>" + tables[2] + "<br>" + tables[3]
 
     def save(self, path):
         """Save profile to provided path.

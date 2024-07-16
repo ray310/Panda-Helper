@@ -8,3 +8,7 @@ description: Panda-Helper API Reference. Detailed description of the Panda-Helpe
 <br>
 
 ::: pandahelper.stats
+
+<br>
+
+::: pandahelper.times

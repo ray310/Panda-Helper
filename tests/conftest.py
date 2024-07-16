@@ -2,18 +2,29 @@
 
 Note that fixtures with a package-scope are run once and then available as
 cached value.
-
 """
 
+from datetime import datetime
 import os
 import numpy as np
 import pandas as pd
 import pytest
+from .utils import make_category_data
 
 TEST_DATA_DIR = "tests/test_data"
 TEST_DATA_FILE = "sample_collisions.csv"
 CAT_SERIES = "BOROUGH"
 NUM_SERIES = "NUMBER OF PERSONS INJURED"
+
+
+@pytest.fixture
+def cat_df(scope="package"):  # pylint: disable=W0613
+    """Return test pd.DataFrame."""
+    start = datetime(year=1999, month=1, day=1, hour=0, minute=0)
+    end = start + pd.Timedelta(hours=10)
+    df = make_category_data("Springfield", start, end, freq="h")
+    df = df.sample(frac=1, random_state=2)  # index is out of order
+    return df
 
 
 @pytest.fixture

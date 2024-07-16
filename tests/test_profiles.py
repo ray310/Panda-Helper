@@ -9,6 +9,7 @@ from datetime import datetime
 import bs4
 import numpy as np
 import pandas as pd
+import pandas.api.types as pat
 import pytest
 import pandahelper.profiles as php
 
@@ -198,6 +199,65 @@ def test_series_profile_frequency_table(test_df):
         # fmt: on
         freq_table = soup.find_all("table")[1]
         assert len(freq_table.find_all("tr")) == v + 1  # +1 for header
+
+
+def test_series_profile_time_index_true(cat_df):
+    """time_index=True calculates time diffs for Series with DateTimeIndex."""
+    series = cat_df["category"]
+    profile = php.SeriesProfile(series, time_index=True)
+    assert pat.is_datetime64_any_dtype(series.index)
+    assert profile.time_diffs.iloc[0] is pd.NaT
+    assert all(profile.time_diffs[1:] == pd.Timedelta(hours=1))
+
+
+def test_series_profile_time_index_false(cat_df):
+    """time_index=False does not calculate time diffs for Series with DateTimeIndex."""
+    series = cat_df["category"]
+    profile = php.SeriesProfile(series, time_index=False)
+    assert pat.is_datetime64_any_dtype(series.index)
+    assert profile.time_diffs is None
+
+
+@pytest.fixture
+def ts_timeindex(scope="module"):  # pylint: disable=W0613
+    """Return pd.Series of type datetime64 with DatetimeIndex."""
+    start = datetime(year=1999, month=1, day=1, hour=0, minute=0)
+    end = start + pd.Timedelta(hours=40)
+    time_series = pd.Series(pd.date_range(start, end, freq="4h", inclusive="left"))
+    index_end = start + pd.Timedelta(hours=10)
+    time_series.index = pd.date_range(start, index_end, freq="h", inclusive="left")
+    return time_series
+
+
+def test_series_profile_ts_range_index_true(ts_timeindex):  # pylint: disable=W0621
+    """time_index=True does not calculate time diffs for Series with RangeIndex."""
+    series = ts_timeindex
+    series.index = range(len(ts_timeindex))
+    profile = php.SeriesProfile(series, time_index=True)
+    assert not pat.is_datetime64_any_dtype(series.index)
+    assert profile.time_diffs is None
+
+
+def test_series_profile_both_time_index_false(ts_timeindex):  # pylint: disable=W0621
+    """SeriesProfile should have time diffs from series, (not index).
+
+    Given for Series(datetime64) with TimeIndex and time_index=False.
+    """
+    profile = php.SeriesProfile(ts_timeindex, time_index=False)
+    assert pat.is_datetime64_any_dtype(ts_timeindex.index)
+    assert profile.time_diffs.iloc[0] is pd.NaT
+    assert all(profile.time_diffs[1:] == pd.Timedelta(hours=4))
+
+
+def test_series_profile_both_time_index_true(ts_timeindex):  # pylint: disable=W0621
+    """SeriesProfile should have time diffs from index, (not series).
+
+    Given for Series(datetime64) with TimeIndex and time_index=True.
+    """
+    profile = php.SeriesProfile(ts_timeindex, time_index=True)
+    assert pat.is_datetime64_any_dtype(ts_timeindex.index)
+    assert profile.time_diffs.iloc[0] is pd.NaT
+    assert all(profile.time_diffs[1:] == pd.Timedelta(hours=1))
 
 
 def test_series_profile_frequency_table_invalid(test_df):
