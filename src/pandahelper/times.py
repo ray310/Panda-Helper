@@ -1,10 +1,11 @@
 """Panda-Helper time-series functions."""
 
+from typing import Union  # TODO: Remove when deprecating Python 3.9
 import pandas as pd
 import pandas.api.types as pat
 
 
-def time_diffs(series: pd.Series | pd.DatetimeIndex) -> pd.Series(pd.Timedelta):
+def time_diffs(series: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series(pd.Timedelta):
     """Calculate time diffs (gaps) for Pandas Series or Index of timestamps.
 
     Sorts input by time before calculating diffs.
@@ -27,7 +28,7 @@ def time_diffs(series: pd.Series | pd.DatetimeIndex) -> pd.Series(pd.Timedelta):
     return diffs
 
 
-def time_diffs_index(df: pd.DataFrame | pd.Series) -> pd.Series(pd.Timedelta):
+def time_diffs_index(df: Union[pd.Series, pd.DatetimeIndex]) -> pd.Series(pd.Timedelta):
     """Calculate time diffs (gaps) for time-indexed Pandas Series or Dataframe.
 
     Sorts input by time before calculating diffs.
