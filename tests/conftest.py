@@ -4,7 +4,6 @@ Note that fixtures with a package-scope are run once and then available as
 cached value.
 """
 
-from datetime import datetime
 import os
 import numpy as np
 import pandas as pd
@@ -19,8 +18,8 @@ NUM_SERIES = "NUMBER OF PERSONS INJURED"
 
 @pytest.fixture
 def cat_df(scope="package"):  # pylint: disable=W0613
-    """Return test pd.DataFrame."""
-    start = datetime(year=1999, month=1, day=1, hour=0, minute=0)
+    """Return test pd.DataFrame with DatetimeIndex."""
+    start = pd.Timestamp(year=1999, month=1, day=1)
     end = start + pd.Timedelta(hours=10)
     df = make_category_data("Springfield", start, end, freq="h")
     df = df.sample(frac=1, random_state=2)  # index is out of order
@@ -28,8 +27,19 @@ def cat_df(scope="package"):  # pylint: disable=W0613
 
 
 @pytest.fixture
+def ts_timeindex(scope="package"):  # pylint: disable=W0613
+    """Return pd.Series of type datetime64 with DatetimeIndex."""
+    start = pd.Timestamp(year=1999, month=1, day=1)
+    end = start + pd.Timedelta(hours=40)
+    time_series = pd.Series(pd.date_range(start, end, freq="4h", inclusive="left"))
+    index_end = start + pd.Timedelta(hours=10)
+    time_series.index = pd.date_range(start, index_end, freq="h", inclusive="left")
+    return time_series
+
+
+@pytest.fixture
 def test_df(scope="package"):  # pylint: disable=W0613
-    """Return test pd.DataFrame."""
+    """Return test pd.DataFrame from sample of NYC collisions dataset."""
     return pd.read_csv(os.path.join(TEST_DATA_DIR, TEST_DATA_FILE))
 
 

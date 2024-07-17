@@ -218,17 +218,6 @@ def test_series_profile_time_index_false(cat_df):
     assert profile.time_diffs is None
 
 
-@pytest.fixture
-def ts_timeindex(scope="module"):  # pylint: disable=W0613
-    """Return pd.Series of type datetime64 with DatetimeIndex."""
-    start = datetime(year=1999, month=1, day=1, hour=0, minute=0)
-    end = start + pd.Timedelta(hours=40)
-    time_series = pd.Series(pd.date_range(start, end, freq="4h", inclusive="left"))
-    index_end = start + pd.Timedelta(hours=10)
-    time_series.index = pd.date_range(start, index_end, freq="h", inclusive="left")
-    return time_series
-
-
 def test_series_profile_ts_range_index_true(ts_timeindex):  # pylint: disable=W0621
     """time_index=True does not calculate time diffs for Series with RangeIndex."""
     series = ts_timeindex

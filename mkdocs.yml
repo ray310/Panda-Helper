@@ -101,6 +101,7 @@ plugins:
       python:
         paths: [src]
         options:
+          members_order: alphabetical
           docstring_style: google
           docstring_section_style: list
           docstring_options:
