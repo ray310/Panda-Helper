@@ -36,6 +36,18 @@ def test_dataframe_profile_valid_312(test_df):
             assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
+@pytest.mark.skipif(
+    not ((3, 12) <= sys.version_info < (3, 13)), reason="Runs on Python 3.12"
+)
+def test_dataframe_time_profile_valid_312(cat_df):
+    """Time-indexed DataFrame profile should match test profile (Python 3.12)."""
+    compare_file = os.path.join(TEST_DATA_DIR, "test_df_time_profile.txt")
+    with tempfile.TemporaryDirectory() as tmp:
+        test_file = os.path.join(tmp, "temp.txt")
+        php.DataFrameProfile(cat_df).save(test_file)
+        assert filecmp.cmp(compare_file, test_file, shallow=False)
+
+
 def test_dataframe_profile_invalid(non_series_invalid, num_series, cat_like_series):
     """DataFrame profile should not accept invalid data types."""
     invalid_types = [*non_series_invalid, num_series, cat_like_series]
@@ -44,17 +56,18 @@ def test_dataframe_profile_invalid(non_series_invalid, num_series, cat_like_seri
             php.DataFrameProfile(invalid)
 
 
-def test_dataframe_profile_html(test_df):
+def test_dataframe_profile_html(cat_df):
     """Test html representation of DataFrameProfile."""
-    profile = php.DataFrameProfile(test_df)
+    profile = php.DataFrameProfile(cat_df)
     # fmt: off
     soup = bs4.BeautifulSoup(profile._repr_html_(), "html.parser")  # pylint: disable=W0212
     # fmt: on
     tables = soup.find_all("table")
-    assert len(tables) == 3  # null_table
+    assert len(tables) == 4
     assert len(tables[2].find_all("tr")) == 16  # 15 dist stats + head row
     first_td = tables[2].find("td")
     assert first_td["style"] == "font-family: monospace, monospace; text-align: left;"
+    assert len(tables[3].find_all("tr")) == 3  # 2 deltas + head row
 
 
 def test_series_profile_text_valid_numerical_format(num_series):
@@ -74,6 +87,16 @@ def test_series_profile_text_valid_object_format(cat_like_series):
     with tempfile.TemporaryDirectory() as tmp:
         test_file = os.path.join(tmp, "temp.txt")
         php.SeriesProfile(cat_like_series).save(test_file)
+        assert filecmp.cmp(compare_file, test_file, shallow=False)
+
+
+def test_series_profile_text_valid_time_format(cat_df):
+    """Text version of SeriesProfile for time data matches test profile."""
+    comparison_profile = "test_series_time_profile.txt"
+    compare_file = os.path.join(TEST_DATA_DIR, comparison_profile)
+    with tempfile.TemporaryDirectory() as tmp:
+        test_file = os.path.join(tmp, "temp.txt")
+        php.SeriesProfile(cat_df["category"], time_index=True).save(test_file)
         assert filecmp.cmp(compare_file, test_file, shallow=False)
 
 
@@ -168,18 +191,19 @@ def test_series_profile_invalid(non_series_invalid, test_df):
             php.SeriesProfile(invalid)
 
 
-def test_series_profile_html(num_series):
+def test_series_profile_html(cat_df):
     """Test html representation of SeriesProfile."""
-    profile = php.SeriesProfile(num_series)
+    profile = php.SeriesProfile(cat_df["C"], time_index=True)
     # fmt: off
     soup = bs4.BeautifulSoup(profile._repr_html_(), "html.parser")  # pylint: disable=W0212
     # fmt: on
     tables = soup.find_all("table")
-    assert len(tables) == 3  # null_table
-    assert len(tables[1].find_all("tr")) == 6  # freq table
+    assert len(tables) == 4
+    assert len(tables[1].find_all("tr")) == 16  # freq table
     assert len(tables[2].find_all("tr")) == 16  # 15 dist stats + head row
     first_td = tables[2].find("td")
     assert first_td["style"] == "font-family: monospace, monospace; text-align: left;"
+    assert len(tables[3].find_all("tr")) == 3  # 2 deltas + head row
 
 
 def test_series_profile_frequency_table(test_df):
@@ -201,18 +225,18 @@ def test_series_profile_frequency_table(test_df):
         assert len(freq_table.find_all("tr")) == v + 1  # +1 for header
 
 
-def test_series_profile_time_index_true(cat_df):
+def test_series_profile_time_index_true(simple_df):
     """time_index=True calculates time diffs for Series with DateTimeIndex."""
-    series = cat_df["category"]
+    series = simple_df["category"]
     profile = php.SeriesProfile(series, time_index=True)
     assert pat.is_datetime64_any_dtype(series.index)
     assert profile.time_diffs.iloc[0] is pd.NaT
     assert all(profile.time_diffs[1:] == pd.Timedelta(hours=1))
 
 
-def test_series_profile_time_index_false(cat_df):
+def test_series_profile_time_index_false(simple_df):
     """time_index=False does not calculate time diffs for Series with DateTimeIndex."""
-    series = cat_df["category"]
+    series = simple_df["category"]
     profile = php.SeriesProfile(series, time_index=False)
     assert pat.is_datetime64_any_dtype(series.index)
     assert profile.time_diffs is None

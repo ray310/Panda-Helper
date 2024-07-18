@@ -22,6 +22,7 @@ class DataFrameProfile:
         num_duplicates (int): Number of duplicated rows.
         nulls_per_row (pd.Series): Count of null values per row.
         null_stats (list): Distribution statistics on nulls per row.
+        time_diffs (pd.Series): Time diffs (gaps) if DataFrame has a DateTimeIndex.
     """
 
     def __init__(self, df: pd.DataFrame, *, name: str = "", fmt: str = "simple"):
@@ -44,6 +45,7 @@ class DataFrameProfile:
         self.memory_usage = df.memory_usage(index=True, deep=True) / 1000000  # MB
         self.num_duplicates = sum(df.duplicated(keep="first"))
         self.nulls_per_row = df.isna().sum(axis=1)
+        self.time_diffs = self.__calc_time_diffs(df)
         self.null_stats = self.__null_stats()
         self._format = fmt
 
@@ -53,6 +55,13 @@ class DataFrameProfile:
         new_stats = {"Number of Columns": self.shape[1]}
         del stats[delete_key]
         return new_stats | stats
+
+    @staticmethod
+    def __calc_time_diffs(df: pd.DataFrame) -> pd.Series or None:
+        """Calculate time diffs if DataFrame is time-indexed."""
+        if pat.is_datetime64_any_dtype(df.index):
+            return pht.time_diffs_index(df)
+        return None
 
     def __create_tables(self, table_fmt: str):
         """Create DataFrameProfile summary tables.
@@ -92,7 +101,15 @@ class DataFrameProfile:
             headers=["Summary of Nulls Per Row", ""],
             tablefmt=table_fmt,
         )
-        return [df_table, dtype_usage_table, null_table]
+        tables = [df_table, dtype_usage_table, null_table]
+        if self.time_diffs is not None:
+            time_diffs_table = tabulate(
+                phs.frequency_table(self.time_diffs),
+                headers=["Time Gaps (Diffs)", "Count", "% of total"],
+                tablefmt=table_fmt,
+            )
+            tables.append(time_diffs_table)
+        return tables
 
     def __repr__(self):
         """Printable version of profile."""
@@ -104,7 +121,8 @@ class DataFrameProfile:
         tables = [_format_html_table(t) for t in self.__create_tables("html")]
         tables[1] = _decimal_align_col(tables[1], 2)  # type/memory usage table
         tables[2] = _decimal_align_col(tables[2], 1)  # stats table
-        return tables[0] + "<br>" + tables[1] + "<br>" + tables[2]
+        output = "".join([table + "<br>" for table in tables])
+        return output[:-4]  # remove last <br>
 
     def save(self, path: str):
         """Save profile to provided path.
@@ -159,7 +177,7 @@ class SeriesProfile:
             TypeError: If input is not a Pandas Series.
         """
         if not isinstance(series, pd.Series):
-            raise TypeError(f"{series}, is not pd.DataFrame")
+            raise TypeError(f"{series}, is not pd.Series")
         if freq_most_least[0] < 0 or freq_most_least[1] < 0:
             raise ValueError("Tuple values must be >= 0!")
         self._format = fmt
@@ -173,7 +191,7 @@ class SeriesProfile:
         self.stats = self.__calc_stats(series)
         self.time_diffs = self.__calc_time_diffs(series, time_index)
 
-    def __calc_stats(self, series):
+    def __calc_stats(self, series: pd.Series):
         """Calculate distribution stats if allowed dtype, else return None."""
         if pat.is_object_dtype(self.dtype) or isinstance(
             self.dtype, pd.CategoricalDtype
@@ -182,7 +200,7 @@ class SeriesProfile:
         return phs.dist_stats_dict(series)
 
     @staticmethod
-    def __calc_time_diffs(series, use_time_index: bool) -> pd.Series or None:
+    def __calc_time_diffs(series: pd.Series, use_time_index: bool) -> pd.Series or None:
         """Calculate time diffs for time-indexed series or datetime64 series."""
         if use_time_index and pat.is_datetime64_any_dtype(series.index):
             return pht.time_diffs_index(series)
@@ -210,7 +228,7 @@ class SeriesProfile:
         freq_table = tabulate(
             freq_info, headers=["Value", "Count", "% of total"], tablefmt=table_fmt
         )
-        stats_table = ""
+        tables = [series_table, freq_table]
         if self.stats is not None:
             stats = self.stats
             # tabulate casts complex numbers to real numbers, dropping imaginary part
@@ -221,14 +239,15 @@ class SeriesProfile:
                 headers=["Statistic", "Value"],
                 tablefmt=table_fmt,
             )
-        time_diffs_table = ""
+            tables.append(stats_table)
         if self.time_diffs is not None:
             time_diffs_table = tabulate(
                 phs.frequency_table(self.time_diffs),
                 headers=["Time Gaps (Diffs)", "Count", "% of total"],
                 tablefmt=table_fmt,
             )
-        return [series_table, freq_table, stats_table, time_diffs_table]
+            tables.append(time_diffs_table)
+        return tables
 
     def __repr__(self):
         """Printable version of profile."""
@@ -238,8 +257,10 @@ class SeriesProfile:
     def _repr_html_(self):
         """HTML representation of profile."""
         tables = [_format_html_table(t) for t in self.__create_tables("html")]
-        tables[2] = _decimal_align_col(tables[2], 1)
-        return tables[0] + "<br>" + tables[1] + "<br>" + tables[2] + "<br>" + tables[3]
+        if self.stats is not None:
+            tables[2] = _decimal_align_col(tables[2], 1)
+        output = "".join([table + "<br>" for table in tables])
+        return output[:-4]  # remove last <br>
 
     def save(self, path):
         """Save profile to provided path.
