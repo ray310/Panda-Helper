@@ -7,7 +7,7 @@
 ## 0.1.1 - Unreleased
 ### Added
 - SeriesProfile now reports gaps in pd.Series with type `datetime64` or for Series with `DatetimeIndex`. [gh-20](https://github.com/ray310/Panda-Helper/issues/20)
-- `times.py` module has been added with public functions `time_diffs`, `time_diffs_index`, `id_gaps`, `id_gaps_index`. [gh-20](https://github.com/ray310/Panda-Helper/issues/20)
+- `times.py` module has been added with public functions `time_diffs`, `time_diffs_index`, `id_gaps`, `id_gaps_index`, `category_gaps`. [gh-20](https://github.com/ray310/Panda-Helper/issues/20)
 - [`freq_most_least` default parameter for SeriesProfile has been changed to `(10, 5)`.](https://github.com/ray310/Panda-Helper/commit/9ea7a4108996422eaa433e3b86ed20dbbb3c0bdb)
 
 ____

@@ -1,5 +1,6 @@
 """Panda-Helper time-series functions."""
 
+from warnings import warn
 from typing import Union  # TODO: Remove when deprecating Python 3.9
 import pandas as pd
 import pandas.api.types as pat
@@ -161,3 +162,72 @@ def id_gaps_index(
     """
     diffs = time_diffs_index(df)
     return diffs[diffs > threshold].sort_values(ascending=False).to_frame()
+
+
+def category_gaps(
+    series: pd.Series, threshold: pd.Timedelta, max_cat: int = 50
+) -> [pd.DataFrame, None]:
+    """Calculate sum of gaps for each category in time-indexed Series.
+
+    Gaps are time differences in excess of expected time increment (threshold). Gap per
+    category is relative to the minimum and maximum times in the Series.
+    Intended for use with categorical-like Series.
+
+    Args:
+        series (pd.Series): Categorical-like Series.
+        threshold (pd.Timedelta): Threshold for the time difference to be considered
+            a gap. For hourly data, threshold should be pd.Timedelta(hours=1).
+        max_cat (int): Maximum number categories (unique values) before issuing
+            warning and returning `None`.
+
+    Returns:
+        Key-value pairs with category name and associated gap. Will return None if
+            number of categories exceeds `max_cat`.
+
+    Warns:
+        UserWarning: If the number of categories (unique values) in the series
+            exceeds `max_cat`.
+
+    Examples:
+        >>> import pandahelper as ph
+        >>> import pandas as pd
+        >>>
+        >>> start = pd.Timestamp(year=1999, month=1, day=1)
+        >>> a = pd.Series(["A"] * 30, index=pd.date_range(start, periods=30, freq="D"))
+        >>> b = pd.Series(["B"] * 15, index=pd.date_range(start, periods=15, freq="2D"))
+        >>> c = pd.Series(["C"] * 10, index=pd.date_range(start, periods=10, freq="D"))
+        >>> ph.category_gaps(pd.concat([a, b, c]), threshold=pd.Timedelta(days=1))
+                      Cumulative Gap
+            C        20 days
+            B        15 days
+            A         0 days
+    """
+    if not isinstance(series, pd.Series) or not isinstance(
+        series.index, pd.DatetimeIndex
+    ):
+        raise TypeError(
+            f"Series should be {pd.Series} with index of type {pd.DatetimeIndex}"
+        )
+    if not isinstance(threshold, pd.Timedelta):
+        raise TypeError(f"Increment should be {pd.Timedelta}")
+    gaps = {}
+    time_range = series.index.max() - series.index.min()
+    categories = series.unique()
+    if len(categories) > max_cat:
+        msg = (
+            f"Number of categories is greater than f{max_cat}. To proceed "
+            f"increase 'max_cat' and run function again."
+        )
+        warn(msg, stacklevel=2)
+        return None
+    for cat in categories:
+        cat_slice = series.loc[series == cat]
+        if pd.isnull(cat):  # treat nulls as distinct category
+            nulls = series.apply(lambda x: x is cat)  # pylint: disable=W0640
+            cat_slice = series[nulls]
+        cat_range = cat_slice.index.max() - cat_slice.index.min()
+        diffs = time_diffs_index(cat_slice)
+        gap = (diffs[diffs > threshold] - threshold).sum()
+        gaps[cat] = time_range - cat_range + gap
+    df = pd.Series(gaps.values(), index=gaps.keys(), name="Cumulative Gap")
+    return df.sort_values(ascending=False).to_frame()

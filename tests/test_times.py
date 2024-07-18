@@ -1,8 +1,10 @@
 """Tests for functions in times.py."""
 
+import numpy as np
 import pandas as pd
 import pytest
 import pandahelper.times as pht
+from .utils import make_category_data
 
 
 def test_time_diffs(cat_df):
@@ -81,3 +83,111 @@ def test_id_gaps_no_gaps(ts_timeindex):
     """id_gap_index returns empty Dataframe when threshold exceeds diffs."""
     result = pht.id_gaps(ts_timeindex, pd.Timedelta(hours=4, microseconds=1))
     assert len(result) == 0
+
+
+def test_category_gaps_frequency():
+    """Gaps are calculated correctly for categories of varying frequency in Series."""
+    start = pd.Timestamp(year=1999, month=1, day=1)
+    duration = pd.Timedelta(days=365)
+    end = start + duration
+    delay = pd.Timedelta(days=180)
+    c1 = make_category_data("Springfield", start, end, freq="h")
+    c2 = make_category_data("Quahog", start + delay, end, freq="h")
+    c3 = make_category_data("Park South", start, end, freq="2h")
+    c4 = make_category_data("East Midtown", start, end, freq="4h")
+    c5 = make_category_data("San Diego", start, end, freq="W")
+    c6 = make_category_data("South Philadelphia", start, end, freq="MS")
+    df = pd.concat([c1, c2, c3, c4, c5, c6])
+    gaps = {
+        "South Philadelphia": duration - pd.Timedelta(hours=12),
+        "San Diego": duration - pd.Timedelta(hours=52),
+        "East Midtown": duration - duration / 4,
+        "Park South": duration / 2,
+        "Quahog": delay,
+        "Springfield": pd.Timedelta(hours=0),
+    }
+    expected = pd.DataFrame(
+        gaps.values(), columns=["Cumulative Gap"], index=list(gaps.keys())
+    )
+    result = pht.category_gaps(df["category"], pd.Timedelta(hours=1))
+    pd.testing.assert_frame_equal(expected, result, check_index_type=True)
+
+
+def test_category_gaps_no_gaps():
+    """Series with no gaps should show 0 gaps."""
+    start = pd.Timestamp(year=1999, month=1, day=1)
+    end = start + pd.Timedelta(hours=1)
+    c1 = make_category_data("Springfield", start, end, freq="h")
+    c2 = make_category_data("Park South", start, end, freq="2h")
+    df = pd.concat([c1, c2])
+    gaps = {
+        "Springfield": pd.Timedelta(hours=0),
+        "Park South": pd.Timedelta(hours=0),
+    }
+    expected = pd.DataFrame(
+        gaps.values(), columns=["Cumulative Gap"], index=list(gaps.keys())
+    )
+    result = pht.category_gaps(df["category"], pd.Timedelta(hours=1))
+    pd.testing.assert_frame_equal(expected, result, check_index_type=True)
+
+
+def test_category_gaps_nulls():
+    """Nulls should be treated as separate categories with correctly calculated gaps."""
+    start = pd.Timestamp(year=1999, month=1, day=1)
+    end = start + pd.Timedelta(hours=25)  # to get 24 hour range with freq='2h'
+    df = make_category_data("Quahog", start, end, freq="2h")
+    df.iloc[:2, 3] = None
+    df.iloc[2:4, 3] = pd.NA
+    df.iloc[4:6, 3] = np.nan
+    df.iloc[6:8, 3] = pd.NaT
+    gaps = {
+        None: pd.Timedelta(hours=23),
+        pd.NA: pd.Timedelta(hours=23),
+        np.nan: pd.Timedelta(hours=23),
+        pd.NaT: pd.Timedelta(hours=23),
+        "Quahog": pd.Timedelta(hours=20),
+    }
+    expected = pd.DataFrame(
+        gaps.values(), columns=["Cumulative Gap"], index=list(gaps.keys())
+    )
+    result = pht.category_gaps(df["category"], pd.Timedelta(hours=1))
+    pd.testing.assert_frame_equal(expected, result, check_index_type=True)
+
+
+def test_category_gaps_not_series_exception():
+    """Non-series input raises Exception."""
+    df = pd.DataFrame({"A": list(range(5))})
+    with pytest.raises(TypeError) as exc:
+        pht.category_gaps(df, pd.Timedelta(hours=1))
+    assert str(pd.Series) in str(exc.value)
+
+
+def test_category_gaps_wrong_series_exception():
+    """Non-time indexed series raises Exception."""
+    series = pd.Series({"A": list(range(5))})
+    with pytest.raises(TypeError) as exc:
+        pht.category_gaps(series, pd.Timedelta(hours=1))
+    assert str(pd.DatetimeIndex) in str(exc.value)
+
+
+def test_category_gaps_timedelta_wrong_type_exception():
+    """Wrong input type for threshold raises exception."""
+    start = pd.Timestamp(year=1999, month=1, day=1)
+    end = start + pd.Timedelta(days=365)
+    df = make_category_data("Springfield", start, end, freq="h")
+    with pytest.raises(TypeError) as exc:
+        pht.category_gaps(df["category"], start)
+    assert str(pd.Timedelta) in str(exc.value)
+
+
+def test_category_gaps_warning():
+    """Series with more categories than max_cat raises warning and returns None."""
+    start = pd.Timestamp(year=1999, month=1, day=1)
+    end = start + pd.Timedelta(hours=1)
+    c1 = make_category_data("Springfield", start, end, freq="h")
+    c2 = make_category_data("Park South", start, end, freq="2h")
+    df = pd.concat([c1, c2])
+    with pytest.warns(UserWarning):
+        assert (
+            pht.category_gaps(df["category"], pd.Timedelta(hours=1), max_cat=1) is None
+        )
