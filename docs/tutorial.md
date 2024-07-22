@@ -11,6 +11,7 @@ For our Panda-Helper tutorial, we are going to use a dataset that counts how man
 - Metadata: [https://data.cityofnewyork.us/Transportation/Bicycle-Counters/smn3-rzf9/about_data](https://data.cityofnewyork.us/Transportation/Bicycle-Counters/smn3-rzf9/about_data)
 
 ## Loading Data
+Download and save data locally.
 ```Python
 import pandas as pd
 
