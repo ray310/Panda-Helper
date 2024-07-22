@@ -1,0 +1,36 @@
+DataFrame-Level Info
+----------------------  ----------
+DF Shape                (19834, 4)
+Duplicated Rows         0
+Memory Usage (MB)       2.633
+
+Series Name    Data Type         Memory Usage (MB)
+-------------  --------------  -------------------
+Index          datetime64[ns]             0.158672
+A              int64                      0.158672
+B              object                     0.9917
+C              float64                    0.158672
+category       object                     1.16563
+
+Summary of Nulls Per Row
+--------------------------  --
+Number of Columns            4
+min                          0
+1%                           0
+5%                           0
+25%                          0
+50%                          0
+75%                          0
+95%                          0
+99%                          0
+max                          0
+mean                         0
+standard deviation           0
+median                       0
+median absolute deviation    0
+skew                         0
+
+Time Diffs         Count  % of total
+---------------  -------  ------------
+0 days 00:00:00    11074  55.84%
+0 days 01:00:00     8759  44.16%

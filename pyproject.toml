@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "panda-helper"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
     "beautifulsoup4>=4.12.2",
     "numpy>=1.26.0",
@@ -44,7 +44,7 @@ test = ["pytest>=7.4", "pylint>=3.0"]
 extend-include = ["*.ipynb"]
 
 [tool.ruff.lint]
-select = ["D", "F", "B"]  # pydocstyle, pyflakes, flake8-bugbear, isort
+select = ["D", "F", "B"]  # pydocstyle, pyflakes, flake8-bugbear
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

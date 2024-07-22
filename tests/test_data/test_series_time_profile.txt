@@ -1,0 +1,20 @@
+category Info
+---------------  ------
+Data Type        object
+Count            19834
+Unique Values    6
+Null Values      0
+
+Value                 Count  % of total
+------------------  -------  ------------
+Springfield            8760  44.17%
+Quahog                 4440  22.39%
+Park South             4380  22.08%
+East Midtown           2190  11.04%
+San Diego                52  0.26%
+South Philadelphia       12  0.06%
+
+Time Diffs         Count  % of total
+---------------  -------  ------------
+0 days 00:00:00    11074  55.84%
+0 days 01:00:00     8759  44.16%

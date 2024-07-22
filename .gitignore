@@ -9,14 +9,14 @@
 conda_environment_dev_*
 
 # folders
-.coverage
 .idea
-data
-notes
 dist
 htmlcov
+notebooks
+notes
 site
 __pycache__
 
 # files
+.coverage
 .DS_Store

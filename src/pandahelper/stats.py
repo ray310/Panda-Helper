@@ -18,6 +18,20 @@ def frequency_table(series: pd.Series) -> pd.DataFrame:
 
     Raises:
         TypeError: If input is not a Pandas Series.
+
+    Examples:
+        >>> import random
+        >>> import pandahelper as ph
+        >>>
+        >>> random.seed(314)
+        >>> cities = ["Springfield", "Quahog", "Philadelphia", "Shelbyville"]
+        >>> series = pd.Series(random.choices(cities, k = 200))
+        >>> ph.frequency_table(series)
+                          Count % of Total
+            Springfield      66     33.00%
+            Quahog           51     25.50%
+            Philadelphia     44     22.00%
+            Shelbyville      39     19.50%
     """
     if not isinstance(series, pd.Series):
         raise TypeError(f"{series}, is not pd.Series")
@@ -31,7 +45,7 @@ def frequency_table(series: pd.Series) -> pd.DataFrame:
     return output.sort_values(by="Count", ascending=False)
 
 
-def _abbreviate_string(s, limit=60):
+def _abbreviate_string(s, limit=60) -> str:
     """Return first x characters of a string.
 
     Args:
@@ -70,6 +84,53 @@ def distribution_stats(series: pd.Series) -> pd.DataFrame:
 
     Raises:
         TypeError: If input is not a numeric-like pd.Series.
+
+    Examples:
+        Distribution stats for Pandas Series of type `float64`:
+        >>> from random import seed, gauss, expovariate
+        >>> import pandahelper as ph
+        >>> import pandas as pd
+        >>>
+        >>> seed(314)
+        >>> series = pd.Series([gauss(mu=30, sigma=20) for x in range(200)])
+        >>> ph.distribution_stats(series)
+                                       Statistic Value
+            count                           200.000000
+            min                             -23.643007
+            1%                              -11.918955
+            5%                                2.833604
+            25%                              17.553793
+            50%                              31.420759
+            75%                              42.074998
+            95%                              60.305435
+            99%                              72.028633
+            max                              81.547828
+            mean                             30.580535
+            standard deviation               18.277706
+            median                           31.420759
+            median absolute deviation        12.216607
+            skew                             -0.020083
+
+        Distribution stats for Pandas Series of type `datetime64`:
+        >>> start = pd.Timestamp(2000, 1, 1)
+        >>> tds = [pd.Timedelta(hours=int(expovariate(lambd=.003))) for x in range(200)]
+        >>> times = [start + td for td in tds]
+        >>> series = pd.Series(times)
+        >>> ph.distribution_stats(series)
+                                       Statistic Value
+        count                                      200
+        min                        2000-01-01 00:00:00
+        1%                         2000-01-01 01:59:24
+        5%                         2000-01-01 09:00:00
+        25%                        2000-01-04 08:00:00
+        50%                        2000-01-08 04:30:00
+        75%                        2000-01-16 21:00:00
+        95%                        2000-02-08 01:36:00
+        99%                        2000-02-22 10:20:24
+        max                        2000-04-01 17:00:00
+        mean                       2000-01-12 14:24:18
+        standard deviation  12 days 16:47:15.284423042
+        median                     2000-01-08 04:30:00
     """
     stats = dist_stats_dict(series)
     return pd.DataFrame.from_dict(stats, orient="index", columns=["Statistic Value"])
@@ -157,7 +218,7 @@ def _add_quantiles(series: pd.Series, d: dict):
     d["99%"] = series.quantile(0.99)
 
 
-def _order_stats(stats: dict):
+def _order_stats(stats: dict) -> dict:
     """Sort stats dictionary by order provided in all_stats.
 
     Helper function used in distribution_stats.
