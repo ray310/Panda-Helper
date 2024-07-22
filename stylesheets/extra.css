@@ -1,0 +1,25 @@
+iframe {
+  height: 60rem;
+  width: 100%;
+}
+
+/*  Point where top nav bar disappears. Default is ~70 */
+@media screen and (min-width: 55em) {
+  .md-tabs {
+    display: block;
+  }
+}
+
+/* default 16rem leads to 3 columns when sidebar is hidden.
+** 20rem seems to lock it at two
+*/
+.md-typeset .grid {
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr))
+}
+
+/* Setting function definition color to match theme indigo color
+** https://squidfunk.github.io/mkdocs-material/reference/code-blocks/
+ */
+:root > * {
+  --md-code-hl-function-color: #2977ff;
+}
