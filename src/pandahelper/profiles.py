@@ -105,7 +105,7 @@ class DataFrameProfile:
         if self.time_diffs is not None:
             time_diffs_table = tabulate(
                 phs.frequency_table(self.time_diffs),
-                headers=["Time Gaps (Diffs)", "Count", "% of total"],
+                headers=["Time Diffs", "Count", "% of total"],
                 tablefmt=table_fmt,
             )
             tables.append(time_diffs_table)
@@ -243,7 +243,7 @@ class SeriesProfile:
         if self.time_diffs is not None:
             time_diffs_table = tabulate(
                 phs.frequency_table(self.time_diffs),
-                headers=["Time Gaps (Diffs)", "Count", "% of total"],
+                headers=["Time Diffs", "Count", "% of total"],
                 tablefmt=table_fmt,
             )
             tables.append(time_diffs_table)

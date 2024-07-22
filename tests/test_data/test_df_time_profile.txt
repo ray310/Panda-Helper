@@ -30,7 +30,7 @@ median                       0
 median absolute deviation    0
 skew                         0
 
-Time Gaps (Diffs)      Count  % of total
--------------------  -------  ------------
-0 days 00:00:00        11074  55.84%
-0 days 01:00:00         8759  44.16%
+Time Diffs         Count  % of total
+---------------  -------  ------------
+0 days 00:00:00    11074  55.84%
+0 days 01:00:00     8759  44.16%
