@@ -26,11 +26,11 @@ that allows you to assess data quality and usefulness with minimal effort.
 
     Detailed description of the Panda-Helper API
 
--   [:material-television-guide:{ .lg .middle } __User Guide__](user_guide.md)
+-   [:material-television-guide:{ .lg .middle } __Tutorial__](tutorial.md)
 
     ---
 
-    How to use Panda-Helper with examples
+    Panda-Helper Tutorial
 
 -   [:simple-github:{ .lg .middle } __Source Code__](https://github.com/ray310/Panda-Helper)
 

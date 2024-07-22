@@ -1,22 +1,7 @@
-![PyPI - Version](https://img.shields.io/pypi/v/panda-helper)
-[![Download Stats](https://img.shields.io/pypi/dm/panda-helper)](https://pypistats.org/packages/panda-helper)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/panda-helper)
-![Tests Status](https://github.com/ray310/Panda-Helper/actions/workflows/pytest.yml/badge.svg)
-![Lint/Format Status](https://github.com/ray310/Panda-Helper/actions/workflows/format_lint.yml/badge.svg)
-
-# Panda-Helper: Quickly and easily inspect data
-Panda-Helper is a simple, open-source, Python data-profiling utility for Pandas' DataFrames and Series.
-
-Assess data quality and usefulness with minimal effort.
-
-Quickly perform initial data exploration, _so you can move on to more in-depth analysis_.
-
-Please see the [project website](https://ray310.github.io/Panda-Helper/) for more information.
-
-## Installing Panda-Helper
-Panda-Helper can be installed with: `pip install panda-helper`.
-
-## Using Panda Helper
+---
+description: Panda Helper Tutorial
+---
+# Panda Helper Tutorial
 For our Panda-Helper tutorial, we are going to use a dataset that counts how many
  bicycles have passed through bike counting sensors at various locations in New York
  City over time. We are going to merge the dataset with some additional metadata for
@@ -25,7 +10,7 @@ For our Panda-Helper tutorial, we are going to use a dataset that counts how man
 - Bicycle Counts: [https://data.cityofnewyork.us/Transportation/Bicycle-Counts/uczf-rk3c/about_data](https://data.cityofnewyork.us/Transportation/Bicycle-Counts/uczf-rk3c/about_data)
 - Metadata: [https://data.cityofnewyork.us/Transportation/Bicycle-Counters/smn3-rzf9/about_data](https://data.cityofnewyork.us/Transportation/Bicycle-Counters/smn3-rzf9/about_data)
 
-### Loading Data
+## Loading Data
 ```Python
 import pandas as pd
 
@@ -39,7 +24,7 @@ bike_counts = pd.read_csv(
 bike_counts = bike_counts.join(metadata.set_index("id"), on="id", how="left")
 ```
 
-### DataFrame Profile
+## DataFrame Profile
 The `DataFrameProfile` is used to get a quick overview of the contents of a Pandas
  DataFrame. It is an object that can be later referenced or saved if desired.
 In a single view it provides:
@@ -111,7 +96,7 @@ Time Diffs         Count  % of total
 0 days 06:15:00        1  0.00%
 ```
 
-### Series Profile (Numeric)
+## Series Profile (Numeric)
 The `SeriesProfile` is used to get a quick overview of the contents of a Pandas
  Series. It is an object that can be later referenced or saved if desired.
 In a single view it provides:
@@ -124,7 +109,7 @@ In a single view it provides:
   can be configured with the optional `freq_most_least` flag
 - Distribution statistics for the Series based on the data type.
 
-_Counts are the number of bike crossings at a bike sensor in a window of time_
+_Counts are the number of bike crossings at a bike sensor in a window of time._
 ```Python
 ph.SeriesProfile(bike_counts["counts"])
 ```
@@ -174,12 +159,12 @@ median absolute deviation    13
 skew                          5.17677
 ```
 
-### Series Profile (Object)
+## Series Profile (Object)
 A `SeriesProfile` for an `object` Series will provide similar information as a numeric
  Series but without distribution statistics. Here we use the optional `freq_most_least`
  parameter to show a longer frequency table.
 
-_Name is the designation of the bike sensor station_
+_Name is the designation of the bike sensor station._
 ```Python
 ph.SeriesProfile(bike_counts["name"], freq_most_least=(20, 20))
 ```
@@ -229,8 +214,8 @@ Forsyth Plaza                                                  14998  0.27%
 Concrete Plant Park                                             6761  0.12%
 ```
 
-### Time Series Functionality
-#### Calculate the cumulative gaps in time series data by category
+## Time Series Functionality
+### Calculate the cumulative gaps in time series data by category
 In the above example we saw a notable difference in the number of observations per
  bike counter station. We can use `category_gaps` to check for gaps in
  time-indexed, categorical-like data. We use the `threshold` parameter to define the
@@ -278,7 +263,7 @@ Manhattan Bridge Ped Path                           464 days 07:15:00
 Manhattan Bridge Bike Comprehensive                 333 days 14:45:00
 Manhattan Bridge Display Bike Counter               333 days 14:45:00
 ```
-#### Identify when gaps occur in time series data
+### Identify when gaps occur in time series data
 It looks like the 'Manhattan Bridge Bike Comprehensive' category has the smallest
  amount of missing time. We can use `id_gaps_index` to identify when the gaps occur.
  We see that the largest gap for this bike sensor is ~328 days long in 2013.
