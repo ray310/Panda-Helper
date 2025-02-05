@@ -12,7 +12,7 @@ from pandahelper.times import (
     category_gaps,
 )
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __all__ = [
     "frequency_table",
     "distribution_stats",
