@@ -4,6 +4,10 @@
 - Add functionality to perform some common data cleaning tasks.
 - Add `geo.py` module and functionality to set 'close' lat-long coordinates to same value.
 
+## 0.1.2 - 2025-02-05
+### Added
+- Adding support for Python 3.13
+
 ## 0.1.1 - 2024-07-22
 ### Added
 - SeriesProfile now reports gaps in pd.Series with type `datetime64` or for Series with `DatetimeIndex`. [gh-20](https://github.com/ray310/Panda-Helper/issues/20)
