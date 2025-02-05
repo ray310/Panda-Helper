@@ -18,7 +18,7 @@ TEST_DATA_FILE = "sample_collisions.csv"
 
 
 @pytest.mark.skipif(
-    not ((3, 12) <= sys.version_info < (3, 13)), reason="Runs on Python 3.12"
+    not ((3, 12) <= sys.version_info < (3, 14)), reason="Runs on Python 3.12 / 3.13"
 )
 def test_dataframe_profile_valid_312(test_df):
     """Generated DataFrame profile should match test profile (Python 3.12)."""
@@ -37,7 +37,7 @@ def test_dataframe_profile_valid_312(test_df):
 
 
 @pytest.mark.skipif(
-    not ((3, 12) <= sys.version_info < (3, 13)), reason="Runs on Python 3.12"
+    not ((3, 12) <= sys.version_info < (3, 14)), reason="Runs on Python 3.12 / 3.13"
 )
 def test_dataframe_time_profile_valid_312(cat_df):
     """Time-indexed DataFrame profile should match test profile (Python 3.12)."""
