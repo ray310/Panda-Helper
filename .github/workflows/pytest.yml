@@ -32,4 +32,5 @@ jobs:
         python -m pip install .[test]
     - name: Test with pytest
       run: |
-        pytest -W
+        export PYTHONWARNINGS="default"
+        pytest
