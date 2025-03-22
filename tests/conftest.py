@@ -16,26 +16,26 @@ CAT_SERIES = "BOROUGH"
 NUM_SERIES = "NUMBER OF PERSONS INJURED"
 
 
-@pytest.fixture
-def test_df(scope="package"):  # pylint: disable=W0613
+@pytest.fixture(scope="package")
+def test_df():
     """Return test pd.DataFrame from sample of NYC collisions dataset."""
     return pd.read_csv(os.path.join(TEST_DATA_DIR, TEST_DATA_FILE))
 
 
-@pytest.fixture
-def cat_like_series(test_df, scope="package"):  # pylint: disable=W0613,W0621
+@pytest.fixture(scope="package")
+def cat_like_series(test_df):  # pylint: disable=W0621
     """Return categorical-like (object) series."""
     return test_df[CAT_SERIES]
 
 
-@pytest.fixture
-def num_series(test_df, scope="package"):  # pylint: disable=W0613,W0621
+@pytest.fixture(scope="package")
+def num_series(test_df):  # pylint: disable=W0621
     """Return numerical series."""
     return test_df[NUM_SERIES]
 
 
-@pytest.fixture
-def non_series_invalid(scope="package"):  # pylint: disable=W0613
+@pytest.fixture(scope="package")
+def non_series_invalid():
     """Provide list of non-pd.Series, invalid data types."""
     invalid_types = [
         None,
@@ -56,8 +56,8 @@ def non_series_invalid(scope="package"):  # pylint: disable=W0613
     return invalid_types
 
 
-@pytest.fixture
-def simple_df(scope="package"):  # pylint: disable=W0613
+@pytest.fixture(scope="package")
+def simple_df():
     """Return test pd.DataFrame with DatetimeIndex."""
     start = pd.Timestamp(year=1999, month=1, day=1)
     end = start + pd.Timedelta(hours=10)
@@ -66,8 +66,8 @@ def simple_df(scope="package"):  # pylint: disable=W0613
     return df
 
 
-@pytest.fixture
-def ts_timeindex(scope="package"):  # pylint: disable=W0613
+@pytest.fixture(scope="package")
+def ts_timeindex():
     """Return pd.Series of type datetime64 with DatetimeIndex."""
     start = pd.Timestamp(year=1999, month=1, day=1)
     end = start + pd.Timedelta(hours=40)
@@ -77,8 +77,8 @@ def ts_timeindex(scope="package"):  # pylint: disable=W0613
     return time_series
 
 
-@pytest.fixture
-def cat_df(scope="package"):  # pylint: disable=W0613
+@pytest.fixture(scope="package")
+def cat_df():
     """Return pd.DataFrame with DatetimeIndex."""
     start = pd.Timestamp(year=1999, month=1, day=1)
     end = start + pd.Timedelta(days=365)
